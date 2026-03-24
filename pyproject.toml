@@ -1,0 +1,7 @@
+[project]
+name = "memoryvault"
+version = "0.2.0"
+description = "Local-first memory system for long-running AI work"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []

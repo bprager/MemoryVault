@@ -1,0 +1,163 @@
+# Research
+
+Last updated: 2026-03-24
+
+## Primary Sources Reviewed
+
+### Context Engineering: Sessions, Memory
+
+- Source: `Context Engineering: Sessions, Memory`
+- URL: `https://smallake.kr/wp-content/uploads/2025/12/Context-Engineering_-Sessions-Memory.pdf`
+- Key takeaway: session history, working state, and long-term memory are different things, and memory generation should usually happen off the hot path with provenance and retrieval timing treated explicitly.
+- Implication for MemoryVault: keep the session store, scratchpad or working state, durable memory, and raw-history backstop as separate layers.
+
+### Generative Agents
+
+- Source: `Generative Agents: Interactive Simulacra of Human Behavior`
+- URL: `https://arxiv.org/abs/2304.03442`
+- Key takeaway: believable long-running agent behavior depended on observation, planning, and reflection working together, with memory being stored, reflected on, and dynamically retrieved for planning.
+- Implication for MemoryVault: memory cannot be separated from planning. The system must preserve plan state explicitly and support reflective updates.
+
+### Reflexion
+
+- Source: `Reflexion: Language Agents with Verbal Reinforcement Learning`
+- URL: `https://arxiv.org/abs/2303.11366`
+- Key takeaway: agents improve when they keep an episodic memory buffer of feedback and reflections from prior attempts.
+- Implication for MemoryVault: success and failure should be stored as first-class memory with explicit reuse in later attempts.
+
+### MemGPT
+
+- Source: `MemGPT: Towards LLMs as Operating Systems`
+- URL: `https://arxiv.org/abs/2310.08560`
+- Key takeaway: tiered memory and explicit movement between memory levels help agents operate beyond the immediate context window.
+- Implication for MemoryVault: the planned layered memory model is directionally sound, but task-state memory should remain in the most durable and accessible tier.
+
+### MemoryBank
+
+- Source: `MemoryBank: Enhancing Large Language Models with Long-Term Memory`
+- URL: `https://arxiv.org/abs/2305.10250`
+- Key takeaway: long-term memory improves sustained interaction, and selective reinforcement or forgetting can be useful.
+- Implication for MemoryVault: use selective forgetting cautiously. It may fit low-value episodic detail, but should not apply to active goals, accepted plans, constraints, or failure history.
+
+### HippoRAG
+
+- Source: `HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models`
+- URL: `https://arxiv.org/abs/2405.14831`
+- Key takeaway: combining knowledge graphs with Personalized PageRank produced stronger and cheaper multi-hop retrieval than common RAG baselines.
+- Implication for MemoryVault: graph retrieval should eventually include a neighborhood-ranking method such as Personalized PageRank rather than relying only on embeddings or simple traversal.
+
+### GraphRAG
+
+- Source: `From Local to Global: A Graph RAG Approach to Query-Focused Summarization`
+- URL: `https://www.microsoft.com/en-us/research/publication/from-local-to-global-a-graph-rag-approach-to-query-focused-summarization/`
+- Key takeaway: entity graphs plus community summaries improved global sensemaking over large private corpora.
+- Implication for MemoryVault: graph-structured summaries are valuable, especially for high-level planning and corpus-wide questions, but should come after explicit task-state memory works.
+
+### LLM Agent Survey
+
+- Source: `A survey on large language model based autonomous agents`
+- URL: `https://link.springer.com/article/10.1007/s11704-024-40231-1`
+- Key takeaway: memory and planning are core parts of a unified agent framework rather than optional add-ons.
+- Implication for MemoryVault: the architecture and benchmarks should treat memory, planning, and action continuity as one system.
+
+### General Agentic Memory Via Deep Research
+
+- Source: `General Agentic Memory Via Deep Research`
+- URL: `https://arxiv.org/abs/2511.18423`
+- Key takeaway: lightweight memory is most useful when paired with a complete searchable page-store and more deliberate search at retrieval time.
+- Implication for MemoryVault: preserve a raw-history backstop and allow higher-effort retrieval paths for exact rehydration.
+
+### A-MEM
+
+- Source: `A-MEM: Agentic Memory for LLM Agents`
+- URL: `https://arxiv.org/abs/2502.12110`
+- Key takeaway: dynamic linking, rich note attributes, and memory evolution can improve long-running knowledge organization.
+- Implication for MemoryVault: use these ideas in the knowledge plane, but keep explicit task state more tightly controlled.
+
+### HyperGraphRAG
+
+- Source: `HyperGraphRAG: Retrieval-Augmented Generation with Hypergraph-Structured Knowledge Representation for Multi-Hop Reasoning`
+- URL: `https://arxiv.org/abs/2503.21322`
+- Key takeaway: some facts are too lossy when forced into simple pairwise edges.
+- Implication for MemoryVault: reified fact nodes or hyperedge-style modeling may be needed later for richer knowledge representation.
+
+### Mem0
+
+- Source: `Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory`
+- URL: `https://arxiv.org/abs/2504.19413`
+- Key takeaway: practical durable memory can be built around incremental extraction plus explicit update operations such as add, update, delete or invalidate, and no-op; graph memory then extends this with structured relations.
+- Implication for MemoryVault: use an explicit memory maintenance contract for declarative memory before introducing more open-ended rewriting.
+
+### Agentic File System Abstraction
+
+- Source: `Everything is Context: Agentic File System Abstraction for Context Engineering`
+- URL: `https://arxiv.org/abs/2512.05470`
+- Key takeaway: context engineering benefits from explicit infrastructure for history, memory, scratchpads, governance, and traceable state transitions.
+- Implication for MemoryVault: keep the lifecycle of raw history, durable memory, and scratchpads explicit and auditable.
+
+### Efficient Agents Survey
+
+- Source: `Toward Efficient Agents: A Survey of Memory, Tool learning, and Planning`
+- URL: `https://arxiv.org/abs/2601.14192`
+- Key takeaway: agent quality must be evaluated together with token, latency, and step cost, and memory design needs a cost-aware lens across construction, management, access, and integration.
+- Implication for MemoryVault: benchmark memory as a cost-quality trade-off rather than as retrieval quality alone.
+
+### ALMA
+
+- Source: `Learning to Continually Learn via Meta-learning Agentic Memory Designs`
+- URL: `https://arxiv.org/abs/2602.07755`
+- Key takeaway: memory design itself can be treated as a learnable, pluggable module with stable update and retrieve interfaces, and different domains may need different designs.
+- Implication for MemoryVault: standardize the memory manager boundary now so future learned or searched memory designs can plug in later.
+
+### Huxley-Godel Machine
+
+- Source: `Huxley-Godel Machine`
+- URL: `https://arxiv.org/abs/2510.21614`
+- Key takeaway: immediate local scores can be a poor proxy for long-run usefulness.
+- Implication for MemoryVault: evaluate memory by downstream task continuity and eventual success, not just local retrieval metrics.
+
+### Memory and the self
+
+- Source: `Memory and the self`
+- URL: `https://doi.org/10.1016/j.jml.2005.08.005`
+- Key takeaway: active goals shape access to long-term memory, but healthy memory also depends on correspondence to experience.
+- Implication for MemoryVault: retrieval should be goal-conditioned while durable memory stays grounded in evidence and provenance.
+
+### ACE
+
+- Source: `Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models`
+- URL: `https://arxiv.org/abs/2510.04618`
+- Key takeaway: evolving procedural context is useful, but monolithic rewriting can cause context collapse and destroy detail.
+- Implication for MemoryVault: manage procedural memory as incrementally curated playbooks instead of whole-context rewrites.
+
+### StateAct
+
+- Source: `StateAct: Enhancing LLM Base Agents via Self-prompting and State-tracking`
+- URL: `https://arxiv.org/abs/2410.02810`
+- Key takeaway: agents adhere better over long interactions when they explicitly restate the goal and track current state.
+- Implication for MemoryVault: runtime prompt assembly should always include an explicit goal reminder and structured current-state section.
+
+## Working Conclusions
+
+1. The strongest memory systems do more than retrieve text. They preserve agent state across attempts.
+2. Graph structure is most valuable when it encodes relationships among task state, provenance, and evidence, not just entities from documents.
+3. Reflection and outcome tracking matter because they stop the agent from repeating failed actions.
+4. Tiered memory is useful, but only if the most important task-state records are protected from loss.
+5. Compression should be delayed until deterministic retrieval of task-state memory already works.
+6. Sessions, long-term memory, and raw history should be treated as separate layers with different lifecycles.
+7. Provenance and confidence should influence both consolidation and inference, not just storage.
+8. Declarative memory and procedural memory should be designed as separate subsystems.
+9. Dynamic linking and memory evolution are promising for the knowledge plane but should not destabilize the control plane.
+10. Complex n-ary facts may eventually require reified fact or hyperedge-style nodes in the graph.
+11. Memory evaluation should optimize for downstream task success and long-run usefulness, not only local retrieval quality.
+12. Scratchpad or working-state artifacts should be explicit and auditable rather than hidden inside durable memory.
+13. Explicit add / update / invalidate / noop operations are a strong starting point for declarative memory maintenance.
+14. Memory should be benchmarked on a Pareto frontier of quality versus cost.
+15. A stable `update` / `retrieve` interface makes the memory layer easier to evolve later.
+16. Active goals should shape retrieval, but durable memory must keep correspondence with evidence.
+17. Long-horizon reliability improves when the runtime context explicitly restates the goal and current state.
+18. Procedural memory should grow through structured incremental playbooks rather than monolithic rewriting.
+
+## Intake Note
+
+Detailed source-by-source verdicts for the user-provided documents live in `RESEARCH_INTAKE.md`. The longer human-readable synthesis with links and short quotes lives in `../docs/research.md`.

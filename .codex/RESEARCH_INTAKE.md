@@ -1,0 +1,200 @@
+# Research Intake
+
+Last updated: 2026-03-24
+
+## Batch 1: User-Provided Documents
+
+### 1. Context Engineering: Sessions, Memory
+
+- File: `/Users/bernd/Downloads/Context Engineering_ Sessions & Memory.pdf`
+- Verdict: accept, core
+- Why it matters: it gives a practical architecture for separating sessions, memory, retrieval timing, provenance, and procedural memory.
+- Adopt now:
+  - keep session state separate from long-term memory
+  - treat memory generation as an asynchronous background process when practical
+  - track provenance and confidence for durable memories
+  - distinguish declarative memory from procedural memory
+  - evaluate memory quality, retrieval quality, and task success separately
+- Do not over-apply:
+  - it is product guidance, not a proof that one vendor’s architecture is the only correct implementation
+
+### 2. General Agentic Memory Via Deep Research
+
+- File: `/Users/bernd/Downloads/2511.18423v1.pdf`
+- Verdict: accept, core with caution
+- Why it matters: it argues for lightweight memory plus a complete searchable history, then uses planning, search, and reflection at retrieval time to assemble task-specific context.
+- Adopt now:
+  - preserve a searchable raw-history or page-store backstop
+  - use lightweight durable memory as guidance rather than as the only truth source
+  - allow retrieval to plan, search, and reflect instead of doing one-shot lookup
+  - combine vector, keyword, and direct-source retrieval where useful
+- Keep the caution:
+  - MemoryVault still needs explicit control-plane memory for task, plan, and outcome state; that should not be replaced by a pure search-over-history design
+
+### 3. A-Mem: Agentic Memory for LLM Agents
+
+- File: `/Users/bernd/Downloads/2502.12110v11.pdf`
+- Verdict: accept, useful now for the knowledge plane
+- Why it matters: it shows a concrete pattern for note enrichment, dynamic linking, memory evolution, and top-k retrieval over long-running interactions.
+- Adopt now:
+  - enrich knowledge-plane memories with structured attributes and embeddings
+  - allow dynamic linking among related notes
+  - consider memory evolution for summaries or contextual descriptions when new evidence arrives
+- Keep the caution:
+  - explicit control-plane state should not be mutated with the same freedom as descriptive knowledge notes
+  - MemoryVault still needs some predefined structure for task, plan, constraint, and outcome records
+
+### 4. HyperGraphRAG
+
+- File: `/Users/bernd/Downloads/2503.21322v3.pdf`
+- Verdict: accept, future-state
+- Why it matters: it shows that binary-only graph structure can lose important n-ary facts, and it offers a retrieval pattern that combines graph facts with chunk text.
+- Adopt later:
+  - represent complex facts with reified fact or hyperedge-style nodes when binary edges become too lossy
+  - use hybrid retrieval that fuses structured facts with raw chunk context
+  - consider separate retrieval over entities and fact nodes
+- Why not now:
+  - this is not phase-1 critical for MemoryVault’s first thin slice
+  - the immediate problem is task-state persistence and retrieval, not high-end knowledge-graph expressiveness
+
+### 5. Huxley-Godel Machine
+
+- File: `/Users/bernd/Downloads/2510.21614v3.pdf`
+- Verdict: accept, indirect but important
+- Why it matters: it shows that immediate benchmark performance can be a poor proxy for long-run agent usefulness and that evaluation should consider longer-run descendants and outcomes.
+- Adopt now:
+  - judge MemoryVault by downstream task continuity, failure avoidance, and final success, not only by local retrieval scores
+  - separate expansion from evaluation when exploring adaptive improvements
+  - early-stop unpromising paths instead of spending equal effort everywhere
+- Why it is indirect:
+  - it is not a memory architecture paper
+  - it affects how MemoryVault should evaluate and improve itself later, more than how phase 1 stores memory
+
+## Batch 1 Summary
+
+- Core now: `Context Engineering: Sessions, Memory`, `General Agentic Memory Via Deep Research`
+- Useful now in a bounded way: `A-Mem: Agentic Memory for LLM Agents`
+- Useful later: `HyperGraphRAG`, `Huxley-Godel Machine`
+- Rejected as irrelevant: none
+
+## Batch 2: User-Provided Documents
+
+### 1. A-Mem: Agentic Memory for LLM Agents
+
+- File: `/Users/bernd/Downloads/2502.12110v11.pdf`
+- Verdict: duplicate, carry forward
+- Why it matters: this paper was already assessed in Batch 1 and remains relevant for knowledge-plane note enrichment, linking, and bounded memory evolution.
+- New action from this batch:
+  - no change in verdict
+  - keep it as a knowledge-plane idea, not a control-plane mechanism
+
+### 2. Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory
+
+- File: `/Users/bernd/Downloads/2504.19413v1.pdf`
+- Verdict: accept, useful now
+- Why it matters: it gives a practical update pipeline for durable declarative memory using candidate extraction, similarity-based comparison, and explicit operations such as add, update, delete or invalidate, and no-op.
+- Adopt now:
+  - use a bounded declarative-memory update contract
+  - support asynchronous conversation summary generation as context for extraction
+  - preserve conflict handling and invalidation semantics instead of naive append-only storage
+- Adopt later:
+  - graph-backed memory for richer relational retrieval if phase-1 memory proves too flat
+
+### 3. Everything is Context: Agentic File System Abstraction for Context Engineering
+
+- File: `/Users/bernd/Downloads/2512.05470v1.pdf`
+- Verdict: accept, useful now with caution
+- Why it matters: it reinforces explicit history, memory, and scratchpad lifecycles, along with governance, access control, and lineage.
+- Adopt now:
+  - make scratchpad handling explicit
+  - keep state transitions auditable
+  - treat access control, lineage, and retention as architecture, not cleanup
+- Keep the caution:
+  - the specific file-system abstraction is interesting, but MemoryVault does not need to commit to “everything is a file” in phase 1
+
+### 4. Toward Efficient Agents: A Survey of Memory, Tool learning, and Planning
+
+- File: `/Users/bernd/Downloads/2601.14192v1.pdf`
+- Verdict: accept, useful now
+- Why it matters: it frames memory as a quality-versus-cost trade-off and surveys practical patterns for working memory, external memory, hybrid management, and memory access.
+- Adopt now:
+  - evaluate MemoryVault on both quality and cost
+  - prefer hybrid management where cheap rules handle obvious cases and LLM reasoning is invoked selectively
+  - keep working memory compact and durable memory targeted
+- Do not over-apply:
+  - this is a survey, so it is more useful for evaluation discipline and design vocabulary than for a single concrete algorithm
+
+### 5. Learning to Continually Learn via Meta-learning Agentic Memory Designs
+
+- File: `/Users/bernd/Downloads/2602.07755v1.pdf`
+- Verdict: accept, future-state
+- Why it matters: it treats memory design itself as something that can be learned, and it argues for stable `update` and `retrieve` interfaces for memory modules.
+- Adopt now:
+  - standardize the memory manager boundary around update and retrieve
+- Adopt later:
+  - explore searched or learned memory designs after a stable hand-designed baseline exists
+- Why not now:
+  - phase 1 still needs a manually understandable baseline before automated memory-design search makes sense
+
+## Batch 2 Summary
+
+- Core now: none beyond already-established first-principles priorities
+- Useful now: `Mem0`, `Everything is Context`, `Toward Efficient Agents`
+- Carry-forward duplicate: `A-Mem`
+- Useful later: `Learning to Continually Learn via Meta-learning Agentic Memory Designs`
+- Rejected as irrelevant: none
+
+## Batch 3: Final User-Provided Documents
+
+### 1. Toward Efficient Agents: A Survey of Memory, Tool learning, and Planning
+
+- File: `/Users/bernd/Downloads/2601.14192v1.pdf`
+- Verdict: duplicate, carry forward
+- Why it matters: this paper was already assessed in Batch 2 and still stands as the main source for a cost-versus-quality evaluation lens.
+- New action from this batch:
+  - no change in verdict
+  - keep using it to shape benchmarking and selective use of heavier memory reasoning
+
+### 2. Memory and the self
+
+- File: `/Users/bernd/Downloads/1-s2.0-S0749596X05000987-main.pdf`
+- Verdict: accept, useful now as a first-principles lens
+- Why it matters: it frames memory access as being shaped by active goals and introduces the tension between coherence and correspondence.
+- Adopt now:
+  - make retrieval explicitly goal-conditioned
+  - preserve evidence correspondence so the system does not drift into self-justifying but weakly grounded memory
+  - treat working state and long-term memory as reciprocal rather than independent
+- Keep the caution:
+  - this is a cognitive theory paper, not an implementation recipe
+  - its value is architectural framing, not a literal software blueprint
+
+### 3. Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models
+
+- File: `/Users/bernd/Downloads/2510.04618v2.pdf`
+- Verdict: accept, useful now with caution
+- Why it matters: it shows that monolithic context rewriting can cause context collapse, and that richer procedural context can be maintained through structured, incremental updates.
+- Adopt now:
+  - treat procedural memory as evolving playbooks
+  - prefer structured grow / refine / curate flows over rewriting a whole context blob
+  - preserve detailed tactics, checks, and failure modes when they remain useful
+- Keep the caution:
+  - more context is not automatically better
+  - detailed playbooks still need retrieval discipline, governance, and protection of the control plane
+
+### 4. StateAct: Enhancing LLM Base Agents via Self-prompting and State-tracking
+
+- File: `/Users/bernd/Downloads/2410.02810v3.pdf`
+- Verdict: accept, useful now
+- Why it matters: it directly addresses long-horizon goal drift and weak state tracking.
+- Adopt now:
+  - include an explicit goal reminder in the active-task package
+  - include a structured current-state header in prompt assembly
+  - keep the next-step context focused on what the agent is trying to do and what the environment currently looks like
+- Keep the caution:
+  - this is guidance for runtime context construction, not a substitute for durable memory
+
+## Batch 3 Summary
+
+- Useful now: `Memory and the self`, `Agentic Context Engineering`, `StateAct`
+- Carry-forward duplicate: `Toward Efficient Agents`
+- Rejected as irrelevant: none
