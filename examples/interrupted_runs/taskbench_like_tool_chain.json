@@ -1,0 +1,105 @@
+{
+  "scenario_id": "taskbench_like_tool_chain",
+  "title": "Synthetic tool-use trace with dependency memory",
+  "domain": "tool_use",
+  "goal": "Book a meeting room and notify the team without sending the message before the room is confirmed.",
+  "interruption_point": "The run stopped after one invalid action ordering and one dependency correction.",
+  "events": [
+    {
+      "actor": "user",
+      "text": "Goal: Book a meeting room and notify the team without sending the message before the room is confirmed."
+    },
+    {
+      "actor": "assistant",
+      "text": "Plan: Check room availability, reserve a room, draft the message with the room details, then send the notification."
+    },
+    {
+      "actor": "assistant",
+      "text": "Constraint: The team message must not be sent before the room reservation succeeds."
+    },
+    {
+      "actor": "tool",
+      "text": "Source: calendar.rooms.search returned three available rooms for Friday at 2 PM.",
+      "source_refs": [
+        "calendar.rooms.search"
+      ]
+    },
+    {
+      "actor": "assistant",
+      "text": "Attempt: Drafted and queued the team message before reserving the room. The step order was wrong."
+    },
+    {
+      "actor": "tool",
+      "text": "Outcome: The message could not be finalized because no room id existed yet."
+    },
+    {
+      "actor": "assistant",
+      "text": "Lesson: The room reservation id is a dependency for the final message."
+    },
+    {
+      "actor": "assistant",
+      "text": "Decision: Reserve the room first and only then compose the final team notification."
+    },
+    {
+      "actor": "assistant",
+      "text": "Next step: Reserve the selected room and pass the reservation id into the notification draft."
+    },
+    {
+      "actor": "assistant",
+      "text": "Assumption: The selected room will remain available for the next tool call."
+    }
+  ],
+  "expected_items": [
+    {
+      "name": "goal_guard",
+      "category": "goal",
+      "keywords": [
+        "meeting room",
+        "before the room is confirmed"
+      ]
+    },
+    {
+      "name": "protect_ordering_constraint",
+      "category": "constraint",
+      "keywords": [
+        "must not be sent before the room reservation succeeds"
+      ]
+    },
+    {
+      "name": "remember_bad_order",
+      "category": "recent_failures",
+      "keywords": [
+        "step order was wrong"
+      ]
+    },
+    {
+      "name": "remember_dependency_lesson",
+      "category": "lesson",
+      "keywords": [
+        "dependency"
+      ]
+    },
+    {
+      "name": "remember_next_step",
+      "category": "current_focus",
+      "keywords": [
+        "reserve the selected room",
+        "reservation id"
+      ]
+    },
+    {
+      "name": "remember_assumption",
+      "category": "assumption",
+      "keywords": [
+        "remain available"
+      ]
+    },
+    {
+      "name": "keep_source_link",
+      "category": "source",
+      "keywords": [
+        "calendar.rooms.search"
+      ]
+    }
+  ]
+}

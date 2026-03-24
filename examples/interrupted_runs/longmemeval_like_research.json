@@ -1,0 +1,104 @@
+{
+  "scenario_id": "longmemeval_like_research",
+  "title": "Imported research trace with a source-grounding interruption",
+  "domain": "research",
+  "goal": "Resume a long document comparison without losing the evidence trail.",
+  "interruption_point": "The run stopped after a weak summary and one open assumption.",
+  "events": [
+    {
+      "actor": "user",
+      "text": "Goal: Resume a long document comparison without losing the evidence trail."
+    },
+    {
+      "actor": "assistant",
+      "text": "Plan: Revisit the source notes, separate confirmed claims from speculation, rebuild the comparison table, then write the recommendation."
+    },
+    {
+      "actor": "assistant",
+      "text": "Constraint: Every recommendation claim needs a source link."
+    },
+    {
+      "actor": "assistant",
+      "text": "Source: notes/source_a.md says the first system retrieves memory only after restating the goal.",
+      "source_refs": [
+        "notes/source_a.md"
+      ]
+    },
+    {
+      "actor": "assistant",
+      "text": "Source: notes/source_b.md says the second system keeps raw history for later re-checking.",
+      "source_refs": [
+        "notes/source_b.md"
+      ]
+    },
+    {
+      "actor": "assistant",
+      "text": "Attempt: Wrote the summary before comparing the evidence. The draft was weak."
+    },
+    {
+      "actor": "assistant",
+      "text": "Lesson: The summary should follow the comparison table, not come first."
+    },
+    {
+      "actor": "assistant",
+      "text": "Next step: Rebuild the side-by-side table with claim, evidence, and risk columns."
+    },
+    {
+      "actor": "assistant",
+      "text": "Assumption: Both source notes use the same definition of session memory."
+    }
+  ],
+  "expected_items": [
+    {
+      "name": "goal_guard",
+      "category": "goal",
+      "keywords": [
+        "evidence trail"
+      ]
+    },
+    {
+      "name": "remember_source_rule",
+      "category": "constraint",
+      "keywords": [
+        "source link"
+      ]
+    },
+    {
+      "name": "remember_weak_draft",
+      "category": "recent_failures",
+      "keywords": [
+        "draft was weak"
+      ]
+    },
+    {
+      "name": "remember_order_lesson",
+      "category": "lesson",
+      "keywords": [
+        "comparison table"
+      ]
+    },
+    {
+      "name": "remember_next_step",
+      "category": "current_focus",
+      "keywords": [
+        "side-by-side table",
+        "risk columns"
+      ]
+    },
+    {
+      "name": "remember_assumption",
+      "category": "assumption",
+      "keywords": [
+        "same definition"
+      ]
+    },
+    {
+      "name": "keep_source_links",
+      "category": "source",
+      "keywords": [
+        "notes/source_a.md",
+        "notes/source_b.md"
+      ]
+    }
+  ]
+}

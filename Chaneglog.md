@@ -10,6 +10,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-03-24
+
+### Added
+
+- A first local discovery prototype for interrupted-task memory evaluation.
+- A small `memoryvault/` package with local run storage, candidate memory extraction, resume packet generation, and evaluation logging.
+- Built-in sample scenarios for coding and document work.
+- A JSON intake path for imported interrupted-task traces.
+- Example imported traces modeled after coding and long-memory work.
+- A synthetic tool-use trace for domain-agnostic interrupted-task testing.
+- A Hugging Face benchmark lead registry for later external evaluation.
+- A durable-field suggestion step that highlights repeated misses.
+- Automated tests covering the local discovery loop.
+- A strategy note describing the tool-first, zero-domain-knowledge development phases.
+- A Memory Wind Tunnel that removes memory fields and measures the damage.
+- A repo-local quality gate with a pre-commit hook, Python linting, Markdown linting, and a 90% coverage threshold.
+
+### Changed
+
+- Replaced the placeholder root entry point with a working CLI.
+- Promoted `assumptions` into the resume packet after repeated misses across scenarios.
+- Reframed the project from a domain-specific product direction to a tool-first memory-learning direction.
+- Updated project docs and `.codex` notes to reflect the new prototype state.
+
 ## [0.2.0] - 2026-03-24
 
 ### Added

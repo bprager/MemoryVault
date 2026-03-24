@@ -4,7 +4,7 @@ Last updated: 2026-03-24
 
 ## Intended System
 
-`MemoryVault` is intended to become a local-first AI memory system that retains useful context over long-running work by combining:
+`MemoryVault` is intended to become a local-first tool for discovering and refining AI memory strategies over long-running work by combining:
 
 - explicit task-state memory,
 - goal-conditioned prompt assembly,
@@ -13,6 +13,24 @@ Last updated: 2026-03-24
 - evolving procedural playbooks,
 - layered summaries,
 - selective rehydration of detail.
+
+## Current Implemented Slice
+
+The repository now includes a small local discovery harness that:
+
+- records interrupted-task runs as raw local artifacts,
+- accepts imported interrupted-task traces from a simple JSON format,
+- extracts candidate memory items heuristically from those runs,
+- builds a deterministic resume packet,
+- keeps the final goal explicit as a goal guard,
+- scores what the resume packet missed,
+- records improvement actions for the next iteration,
+- aggregates repeated misses into candidate durable fields,
+- runs a Memory Wind Tunnel that removes fields and measures the damage.
+
+This harness is intentionally narrower than the final architecture. Its purpose is to help derive the durable memory model from observed failures before wiring the full graph-backed system.
+
+It should be treated as a tool for memory-strategy learning, not as a finished domain-specific memory product.
 
 ## Primary Design Source
 
@@ -39,6 +57,10 @@ The current planning direction is to split memory into two tightly linked planes
 - `knowledge-plane memory`: code, documents, chunks, summaries, anchors, embeddings, and provenance links
 
 The control plane is the highest-priority memory layer. Retrieval should always preserve it before spending budget on broader semantic context.
+
+The tool should not assume that one domain teaches the right memory model. The early architecture therefore needs to support repeated comparison across synthetic and public task families.
+
+The wind tunnel is the first concrete mechanism for that comparison. It currently performs single-field ablations over the resume packet. Later it should grow into whole-strategy comparison.
 
 ## Goal-Conditioned Retrieval
 
@@ -76,6 +98,7 @@ Scratchpads may later produce durable memories, but they are not durable memorie
 At runtime, the first context assembled for an active task should be deterministic and explicit. It should contain:
 
 - active objective
+- explicit final-goal guard
 - current plan and active step
 - success criteria
 - blockers and open questions
@@ -162,11 +185,12 @@ Because the target is shared, the design must use strict workspace isolation fro
 
 ## Current Implementation Gap
 
-None of the major components above are implemented yet. The design direction is far ahead of the codebase.
+The local discovery harness exists, but the graph-backed memory system still does not. The design direction remains ahead of the codebase, though the repo now has a real prototype for interrupted-task evaluation and schema discovery.
 
 ## Design Guardrails
 
 - Optimize first for goal retention, plan continuity, and success / failure tracking.
+- Start with near-zero domain assumptions and let repeated misses shape the durable schema.
 - Keep task state explicit and structured; do not rely on summaries to reconstruct it.
 - Keep session state, long-term memory, and raw history as distinct layers with clear roles.
 - Keep scratchpad state explicit, transient, and auditable.
@@ -182,3 +206,5 @@ None of the major components above are implemented yet. The design direction is 
 - Keep the distinction between "planned" and "implemented" explicit.
 - Build in thin vertical slices instead of trying to realize the whole design at once.
 - Prefer local-first workflows and inspectable state.
+- Use synthetic traces and Hugging Face public datasets until real traces exist.
+- Use ablation-style evaluation before hardening durable fields that sound important but may not matter in practice.

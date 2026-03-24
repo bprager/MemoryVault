@@ -6,26 +6,31 @@ Last updated: 2026-03-24
 
 - Maintain `.codex/` as the codebase evolves.
 - Keep `Chaneglog.md` current when notable project changes are made.
-- Keep `docs/PRD.md` current as the product definition changes.
+- Keep `docs/PRD.md` current as the tool definition changes.
 - Maintain `docs/research.md` as research changes the intended architecture.
-- Keep the project in planning mode until the phase-1 scope and schema are agreed.
-- Keep the combined research synthesis aligned with the planning notes.
+- Keep the combined research synthesis aligned with the implementation direction.
+- Preserve the goal guard in every resume path as the discovery loop evolves.
+- Review repeated resume misses and turn stable patterns into candidate core memory fields.
+- Keep the imported trace format simple enough that real task runs can be added without tooling friction.
+- Keep the tool domain-agnostic until repeated evidence justifies specialization.
+- Use synthetic traces or Hugging Face datasets whenever test inputs are needed.
+- Keep the 90% coverage and lint gates green as the tool grows.
 
 ## Next
 
-- Define the phase-1 thin slice around explicit task, plan, constraint, and success / failure memory.
-- Define the deterministic prompt-assembly package for active work, including goal reminder and current-state header.
-- Incorporate the new session / memory / page-store split into the written architecture.
+- Expand the synthetic interrupted-task library across several generic task shapes.
+- Add Hugging Face dataset adapters for code, tool-use, long-memory conversation, and evidence-grounded document tasks.
+- Add a review loop that summarizes repeated misses and wind-tunnel damage across runs and task families.
+- Decide which repeated misses graduate into the next durable memory fields after `assumptions`.
+- Improve `recent_failures` extraction so weak or wrong attempts are retained even when they do not use the word `failed`.
+- Define the deterministic resume packet for general long-running work, including goal reminder and current-state header.
+- Define workspace isolation for the shared Memgraph instance on `odin:7697`.
+- Extend strategy comparison from single-field ablations to whole memory-policy comparisons.
 - Define the scratchpad or working-state lifecycle explicitly.
 - Define declarative memory update operations and conflict handling.
 - Define how procedural playbooks should grow, refine, and retire without monolithic rewrites.
 - Define how goal-conditioned retrieval is kept source-grounded to avoid self-confirming drift.
-- Add cost-versus-quality evaluation criteria to the benchmark plan.
-- Add benchmark cases for goal drift and context collapse.
-- Decide how provenance and confidence should be represented in phase 1.
-- Define workspace isolation for the shared Memgraph instance on `odin:7697`.
-- Create an initial package structure instead of relying on a single root script.
-- Define how local storage and Memgraph bootstrapping should be configured for development.
+- Decide how provenance and confidence should be represented once the durable schema starts hardening.
 - Decide what raw content should stay in Memgraph versus external files or object storage.
 
 ## Completed Recently
@@ -38,18 +43,26 @@ Last updated: 2026-03-24
 - Assessed the second five user-provided research documents and recorded per-source verdicts.
 - Assessed the final user-provided research batch and synced the resulting lessons into the plan.
 - Created `docs/research.md` as the long-form research summary for future reference.
-- Created `docs/PRD.md` and replaced the placeholder README and project metadata with concrete product descriptions.
+- Created `docs/PRD.md` and replaced the placeholder README and project metadata with a concrete plain-language project brief.
 - Created `Chaneglog.md` in the repo root and added standing instructions to maintain it.
+- Implemented a first local discovery prototype with built-in interrupted-task scenarios, local artifacts, resume packets, and improvement logging.
+- Added a registry of Hugging Face benchmark leads for coding, tool-use, long-memory, and grounded document evaluation.
+- Added a JSON intake path for imported interrupted-task traces and example imported trace files.
+- Promoted `assumptions` into the resume packet as the first evidence-based durable field.
+- Added a durable-field suggestion step based on repeated misses across runs.
+- Added a tool-first strategy note and a zero-domain-knowledge data policy.
+- Added a Memory Wind Tunnel that removes memory fields and measures the damage.
+- Added a local quality gate and pre-commit hook with 90% coverage plus Python and Markdown linting.
 
 ## Likely First Milestones
 
-1. Workspace namespace and schema bootstrap
-2. Session store plus explicit task / plan / outcome graph
-3. Provenance and confidence model for durable memories
-4. Scratchpad and working-state lifecycle
-5. Deterministic task package with explicit goal and current-state header
-6. Basic ingestion of repository notes and docs
-7. Deterministic retrieval of objective, plan, constraints, and recent outcomes
-8. Hybrid retrieval with graph expansion and semantic support
-9. Compression and summary layers
-10. Test and benchmark harness
+1. Synthetic and Hugging Face benchmark adapters
+2. Next durable field promotions after `assumptions`
+3. Whole-strategy comparison across task families
+4. Workspace namespace and schema bootstrap
+5. Session store plus explicit task / plan / outcome graph
+6. Provenance and confidence model for durable memories
+7. Scratchpad and working-state lifecycle
+8. Deterministic task package with explicit goal and current-state header
+9. Hybrid retrieval with graph expansion and semantic support
+10. Compression and summary layers

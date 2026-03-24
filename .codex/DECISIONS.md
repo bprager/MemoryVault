@@ -25,7 +25,7 @@ Last updated: 2026-03-24
 ### 2026-03-24: Stay in planning mode before implementation
 
 - Status: active
-- Decision: do planning review, external research, and assumption checks before starting product implementation.
+- Decision: do planning review, external research, and assumption checks before starting major implementation.
 - Why: the architecture is ambitious and the target graph environment is shared, so bad early assumptions would be expensive.
 
 ### 2026-03-24: Use the verified Memgraph service on `odin:7697`
@@ -94,11 +94,11 @@ Last updated: 2026-03-24
 - Decision: maintain `docs/research.md` as the long-form research synthesis while keeping `.codex/RESEARCH.md` concise.
 - Why: the design now depends on a growing set of papers, and future sessions need one readable place that preserves links, quotes, and project-level lessons.
 
-### 2026-03-24: Keep a human-readable product brief in `docs/PRD.md`
+### 2026-03-24: Keep a human-readable tool brief in `docs/PRD.md`
 
 - Status: active
 - Decision: maintain `docs/PRD.md` as the plain-language statement of MemoryVault's purpose, scope, and success criteria.
-- Why: the repository needs one short, durable reference for what the product is for before implementation details spread further.
+- Why: the repository needs one short, durable reference for what the tool is for before implementation details spread further.
 
 ### 2026-03-24: Keep a root changelog in `Chaneglog.md`
 
@@ -123,3 +123,57 @@ Last updated: 2026-03-24
 - Status: active
 - Decision: reusable strategies, checks, and failure-avoidance patterns should be curated incrementally as playbooks rather than rewritten wholesale each cycle.
 - Why: structured growth is more stable than monolithic context rewriting and better preserves useful detail over time.
+
+### 2026-03-24: Derive the first durable memory model from interrupted-task misses
+
+- Status: active
+- Decision: start implementation with a local interrupted-task discovery loop instead of freezing the durable memory schema upfront.
+- Why: the project does not yet know the exact minimum memory bundle, and repeated misses on resume are a better guide than abstract schema guesses.
+
+### 2026-03-24: Keep the final goal explicit in every resume packet
+
+- Status: active
+- Decision: every resume packet should carry a run-level goal guard that restates the final goal even before the rest of the memory model is mature.
+- Why: losing the final goal is a catastrophic failure mode for long-running work, so goal visibility should not depend on later retrieval quality.
+
+### 2026-03-24: Start the first implementation with a local artifact store
+
+- Status: active
+- Decision: begin with inspectable local JSON artifacts for interrupted-task runs before moving the discovery loop to Memgraph.
+- Why: it reduces startup complexity, keeps failures easy to inspect, and lets the durable schema emerge before graph persistence hardens the shape too early.
+
+### 2026-03-24: Use a simple JSON trace format for early real-task intake
+
+- Status: active
+- Decision: accept interrupted-task traces through a plain JSON file format that matches the built-in scenario shape.
+- Why: it lets real and simulated tasks flow through the same harness immediately, without waiting for a live session-capture system.
+
+### 2026-03-24: Promote assumptions into the first durable resume fields
+
+- Status: active
+- Decision: add `assumptions` to the resume packet after repeated misses showed that hidden assumptions were consistently lost.
+- Why: the first promotion should come from observed failures, and assumptions were the clearest repeated gap in the initial runs.
+
+### 2026-03-24: Treat MemoryVault as a tool-first project, not a domain-specific product
+
+- Status: active
+- Decision: frame MemoryVault as a tool for learning effective memory strategies rather than as a product optimized around one domain from the start.
+- Why: the project should discover which memory fields and strategies generalize, not bake in narrow assumptions before enough evidence exists.
+
+### 2026-03-24: Assume no private real data at design time
+
+- Status: active
+- Decision: use synthetic traces and public Hugging Face datasets as the primary early data sources.
+- Why: the tool must make progress before live production traces exist, and the architecture should not depend on private data availability.
+
+### 2026-03-24: Add a Memory Wind Tunnel before hardening the schema
+
+- Status: active
+- Decision: compare baseline resume packets against ablated variants that remove one field at a time.
+- Why: this creates a causal test for which memory fields actually matter instead of relying on intuition or only on presence in successful runs.
+
+### 2026-03-24: Enforce local quality gates before commit
+
+- Status: active
+- Decision: require passing Python linting, Markdown linting, tests, and at least 90% coverage through a repo-local quality script and pre-commit hook.
+- Why: the project is still small enough that strict local gates are cheap, and they prevent fast-moving design work from silently lowering implementation quality.

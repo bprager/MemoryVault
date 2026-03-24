@@ -5,13 +5,13 @@ Last updated: 2026-03-24
 ## Technical Constraints
 
 - Python version target is `>=3.10`.
-- The current project has no declared runtime dependencies.
+- Keep declared dependencies minimal until the durable memory model and storage boundary are clearer.
 - The codebase is at a very early stage, so added complexity should be justified by immediate value.
 - The target graph service is Memgraph on `odin:7697`, not a fresh localhost database.
 
 ## Product And Architecture Constraints
 
-- The intended product direction is local-first.
+- The intended tool direction is local-first and domain-agnostic at the start.
 - The existing large design document should be treated as an active design input, not as proof that features exist.
 - Future work should preserve a clean separation between repository memory, raw artifacts, and derived summaries.
 - The verified Memgraph target is a shared instance with pre-existing labels, indexes, constraints, and data.
@@ -30,6 +30,12 @@ Last updated: 2026-03-24
 - The design should optimize for both task quality and resource cost, not one in isolation.
 - Durable declarative memory updates should be explicit and auditable rather than opaque whole-store rewrites.
 - Evaluation should include goal drift, repeated failure, and context-collapse cases rather than only retrieval accuracy.
+- The final goal should remain explicit in every resume packet during the discovery phase.
+- At design time, assume no private real-world data.
+- Whenever non-simulated input is needed, prefer public Hugging Face datasets.
+- Public benchmark data should be adapted into interrupted-task resume checks instead of being treated only as one-shot benchmark scores.
+- Early real-task intake should use a simple inspectable file format before live capture is added.
+- Any local commit gate should require passing Python linting, Markdown linting, the test suite, and at least 90% coverage.
 
 ## Workflow Constraints
 
@@ -38,3 +44,4 @@ Last updated: 2026-03-24
 - If the repository state changes in a meaningful way, the relevant `.codex` files should be updated in the same task.
 - User-authored or pre-existing files should not be overwritten casually, especially the large design note in the repo root.
 - Planning should be revised critically before implementation instead of treating the first design as settled.
+- Discovery logs should stay inspectable and local so repeated misses can be reviewed before the durable schema is hardened.

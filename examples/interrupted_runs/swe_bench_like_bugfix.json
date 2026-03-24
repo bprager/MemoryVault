@@ -1,0 +1,101 @@
+{
+  "scenario_id": "swe_bench_like_bugfix",
+  "title": "Imported coding trace with an interruption after a failed attempt",
+  "domain": "coding",
+  "goal": "Fix the parser bug without changing the accepted config syntax.",
+  "interruption_point": "The run stopped after a failed parser rewrite and one confirmed constraint.",
+  "events": [
+    {
+      "actor": "user",
+      "text": "Goal: Fix the parser bug without changing the accepted config syntax."
+    },
+    {
+      "actor": "assistant",
+      "text": "Plan: Reproduce the parser failure, inspect the token handling branch, make the smallest safe patch, rerun the parser tests."
+    },
+    {
+      "actor": "tool",
+      "text": "Source: tests/test_parser.py::test_inline_comment failed because the parser consumed the comment token as a value.",
+      "source_refs": [
+        "tests/test_parser.py::test_inline_comment"
+      ]
+    },
+    {
+      "actor": "assistant",
+      "text": "Constraint: Do not change the accepted config syntax because existing files must still load."
+    },
+    {
+      "actor": "assistant",
+      "text": "Attempt: Rewrote the parser branch to skip all comment-like tokens. The patch failed."
+    },
+    {
+      "actor": "tool",
+      "text": "Outcome: Another parser test failed because inline hashes inside quoted values stopped working."
+    },
+    {
+      "actor": "assistant",
+      "text": "Lesson: The bug is in comment detection outside quoted strings, not in token skipping everywhere."
+    },
+    {
+      "actor": "assistant",
+      "text": "Next step: Narrow the fix to comment detection after quote handling."
+    },
+    {
+      "actor": "assistant",
+      "text": "Assumption: Only the inline comment path shares this token logic."
+    }
+  ],
+  "expected_items": [
+    {
+      "name": "goal_guard",
+      "category": "goal",
+      "keywords": [
+        "parser bug",
+        "config syntax"
+      ]
+    },
+    {
+      "name": "protect_syntax",
+      "category": "constraint",
+      "keywords": [
+        "accepted config syntax"
+      ]
+    },
+    {
+      "name": "remember_failed_rewrite",
+      "category": "recent_failures",
+      "keywords": [
+        "patch failed"
+      ]
+    },
+    {
+      "name": "remember_scope_lesson",
+      "category": "lesson",
+      "keywords": [
+        "outside quoted strings"
+      ]
+    },
+    {
+      "name": "remember_next_step",
+      "category": "current_focus",
+      "keywords": [
+        "comment detection",
+        "quote handling"
+      ]
+    },
+    {
+      "name": "remember_assumption",
+      "category": "assumption",
+      "keywords": [
+        "inline comment path"
+      ]
+    },
+    {
+      "name": "keep_source_link",
+      "category": "source",
+      "keywords": [
+        "tests/test_parser.py::test_inline_comment"
+      ]
+    }
+  ]
+}

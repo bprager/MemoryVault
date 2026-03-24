@@ -157,6 +157,8 @@ Last updated: 2026-03-24
 16. Active goals should shape retrieval, but durable memory must keep correspondence with evidence.
 17. Long-horizon reliability improves when the runtime context explicitly restates the goal and current state.
 18. Procedural memory should grow through structured incremental playbooks rather than monolithic rewriting.
+19. A tool-first memory project should begin with synthetic traces and public datasets if private production traces do not yet exist.
+20. Early benchmark coverage should span several task families so the tool does not mistake one domain's memory needs for a general rule.
 
 ## Intake Note
 

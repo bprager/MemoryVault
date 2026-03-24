@@ -12,6 +12,8 @@ The practical question behind every source review has been the same:
 - how does it remember more without drifting, collapsing detail, or repeating failures?
 - how do we preserve usefulness without letting cost and latency explode?
 
+The current design assumption is that the tool begins without private production traces. That means the research needs to inform not only the memory architecture, but also how to learn and test that architecture with synthetic and public data.
+
 ## Combined Lessons That Survived Review
 
 - The highest-priority memory is the active objective, current plan, success criteria, constraints, blockers, and prior outcomes.
@@ -134,6 +136,7 @@ The practical question behind every source review has been the same:
 ## Architecture Implications For MemoryVault
 
 - Control-plane memory comes first: objective, plan, active step, success criteria, blockers, constraints, decisions, attempts, outcomes, failures, lessons, and source references.
+- The tool should begin with near-zero domain assumptions and let repeated misses shape the durable schema over time.
 - Session state stays separate from durable memory, and both stay separate from exact raw history.
 - Scratchpads and working state are explicit and auditable; they do not become durable memory automatically.
 - Prompt assembly should always start with a deterministic task package that includes the goal and current state.
@@ -141,7 +144,21 @@ The practical question behind every source review has been the same:
 - Procedural memory should be maintained as evolving playbooks, with structured growth and review instead of whole-playbook rewrites.
 - Graph structure should first serve control-state retrieval, provenance, and evidence linkage before more ambitious knowledge modeling.
 - Benchmarking should include plan adherence, failure avoidance, task completion, token cost, latency, and extra tool or retrieval steps.
+- Until real traces exist, benchmark input should come from synthetic traces and public Hugging Face datasets that can be converted into interrupted-task evaluations.
 
 ## Current Bottom Line
 
 The research does not support starting with compression. It supports starting with reliable control-state memory, goal-aware retrieval, explicit state tracking, source-grounded durable memory, and carefully curated procedural playbooks. Compression and richer graph reasoning remain important, but only after the system can already remember what it is trying to do, what has happened so far, and what should happen next.
+
+## Public Benchmark Leads
+
+These public Hugging Face datasets look like strong fits for MemoryVault's evaluation loop because they can be turned into interrupted-task tests instead of only one-shot scores:
+
+- [princeton-nlp/SWE-bench_Verified](https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified): public software tasks with clear goals and test-based outcomes.
+- [nebius/SWE-agent-trajectories](https://huggingface.co/datasets/nebius/SWE-agent-trajectories): full agent runs with failures, logs, and patches for interrupted-trace replay.
+- [microsoft/Taskbench](https://huggingface.co/datasets/microsoft/Taskbench): tool-use planning and dependency graphs across several domains, good for a domain-agnostic tool.
+- [xiaowu0162/longmemeval-cleaned](https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned): public long-memory conversational benchmark; the older `longmemeval` dataset is marked deprecated on Hugging Face.
+- [arcada-labs/conversation-bench](https://huggingface.co/datasets/arcada-labs/conversation-bench): long-range dialogue, tool use, and memory stress cases.
+- [allenai/qasper](https://huggingface.co/datasets/allenai/qasper): source-grounded long-document tasks with evidence.
+- [bigbio/multi_xscience](https://huggingface.co/datasets/bigbio/multi_xscience): multi-document synthesis with source relationships.
+- [hotpotqa/hotpot_qa](https://huggingface.co/datasets/hotpotqa/hotpot_qa): multi-hop evidence retrieval with supporting facts.

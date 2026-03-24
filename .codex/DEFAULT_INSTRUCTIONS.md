@@ -6,7 +6,7 @@ Last updated: 2026-03-24
 
 1. Read this file at the start of every task.
 2. Read `STATUS.md`, `PLAN.md`, and `TASKS.md` before making significant changes.
-3. Read `DESIGN.md`, `CONSTRAINTS.md`, `DECISIONS.md`, `LESSONS_LEARNED.md`, `RESEARCH.md`, `RESEARCH_INTAKE.md`, `../docs/PRD.md`, and `../docs/research.md` whenever the task touches architecture, tradeoffs, product definition, memory behavior, or unfamiliar areas.
+3. Read `DESIGN.md`, `CONSTRAINTS.md`, `DECISIONS.md`, `LESSONS_LEARNED.md`, `RESEARCH.md`, `RESEARCH_INTAKE.md`, `../docs/PRD.md`, and `../docs/research.md` whenever the task touches architecture, tradeoffs, tool definition, memory behavior, or unfamiliar areas.
 4. Treat `.codex/` as the persistent memory layer for this repository and keep it current as part of the task, not as optional cleanup.
 5. Keep a strict distinction between:
    - implemented behavior in the codebase,
@@ -33,7 +33,7 @@ Last updated: 2026-03-24
 - `DECISIONS.md` explains why the repo is the way it is.
 - `LESSONS_LEARNED.md` contains practical guidance worth reusing.
 - `Chaneglog.md` records notable project changes in chronological order.
-- `docs/PRD.md` states the product purpose, scope, and success criteria in plain language.
+- `docs/PRD.md` states the tool purpose, scope, and success criteria in plain language.
 - `docs/research.md` gives future sessions a readable research summary with source links, short quotes, and project-level lessons.
 
 ## Current Expectation

@@ -63,3 +63,35 @@ It is useful to let the active goal shape what memory is retrieved, but durable 
 ### Short, high-signal notes beat long session dumps
 
 The `.codex` files should make the next task easier, not turn into unsearchable logs.
+
+### When the schema is unclear, interrupted-task misses are better than whiteboard guesses
+
+A small local harness that records runs, resumes work, and scores what was forgotten reveals the real durable-memory needs faster than trying to define the full memory model upfront.
+
+### Keep the final goal visible even before the rest of memory is mature
+
+The goal guard is cheap to preserve and protects against the worst kind of drift while the rest of the memory model is still being learned.
+
+### Promote fields only after they miss repeatedly
+
+The first field promotion should come from evidence across several runs. In the current prototype, assumptions crossed that bar and were added to the resume packet.
+
+### A plain file intake path is enough to start with real tasks
+
+You do not need live session capture before the harness becomes useful. A small JSON trace format is enough to get real or simulated interrupted tasks into the same evaluation loop.
+
+### Tool-first framing avoids locking the memory model too early
+
+If the project is treated like a domain product too soon, it becomes tempting to bake in fields that only fit one kind of work. A tool-first framing keeps the schema provisional until repeated evidence justifies it.
+
+### Synthetic traces and public datasets are enough to start learning
+
+You do not need production data to discover obvious memory gaps. Simulated interrupted traces plus public Hugging Face datasets are enough to start testing and improving the tool.
+
+### Field ablations are more informative than field wish lists
+
+As soon as the tool can remove one memory field at a time and measure the damage, it stops guessing about importance and starts observing it.
+
+### Strict quality gates are cheap while the project is small
+
+Coverage, linting, and Markdown checks are much easier to enforce now than after the repo grows. Set the bar early and keep it there.

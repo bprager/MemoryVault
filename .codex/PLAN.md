@@ -4,11 +4,11 @@ Last updated: 2026-03-24
 
 ## Planning Mode
 
-No product implementation should start until the phase-1 thin slice is explicit enough to avoid building the wrong memory system.
+Implementation has now started with a local discovery harness whose job is to reveal what the system forgets on resume. The durable memory schema should be shaped by those observed misses before the Memgraph-backed thin slice is finalized, and the overall tool should begin with near-zero domain knowledge.
 
 ## Goal From First Principles
 
-The system exists to help an agent stay effective across long-running work.
+The tool exists to help an agent stay effective across long-running work while also learning which memory structure actually helps.
 
 That means the highest-priority memory is not "whatever is semantically similar." The highest-priority memory is:
 
@@ -21,6 +21,12 @@ That means the highest-priority memory is not "whatever is semantically similar.
 - authoritative source references.
 
 If these are not preserved, the agent will drift even if it remembers lots of related material.
+
+At design time, assume private real-world traces do not exist. The early learning loop should therefore use:
+
+- synthetic interrupted traces,
+- imported public traces and tasks from Hugging Face,
+- and repeated-miss analysis over those runs.
 
 ## Verified Facts
 
@@ -259,8 +265,23 @@ The shared Memgraph target requires:
 
 ## Recommended Phase Order
 
-### Phase 0: planning and schema review
+### Phase 0: interrupted-task discovery loop
 
+- record interrupted tasks locally with raw history intact
+- accept imported interrupted-task traces through a simple JSON format
+- prefer synthetic traces and public Hugging Face tasks until real traces exist
+- extract candidate memories without assuming a final schema
+- build a deterministic resume packet with an explicit final-goal guard
+- score missed memories and log improvement actions
+- compare repeated misses across scenarios and domains
+- use the observed misses to shape the first durable memory model
+- promote fields only after repeated misses justify them
+- run a wind tunnel that removes one field at a time and measures the resulting damage
+
+### Phase 1: schema and workspace review
+
+- summarize what the tool has learned across synthetic and public benchmark runs
+- summarize which wind-tunnel ablations caused the largest damage
 - finalize the control-plane schema
 - finalize workspace isolation strategy
 - finalize scratchpad and session-working-state semantics
@@ -269,7 +290,7 @@ The shared Memgraph target requires:
 - finalize the procedural playbook update pattern
 - define success metrics and benchmark cases
 
-### Phase 1: explicit task-state memory
+### Phase 2: explicit task-state memory
 
 - connect to `odin:7697`
 - bootstrap workspace namespace
@@ -280,7 +301,7 @@ The shared Memgraph target requires:
 - retrieve the active task package deterministically
 - assemble prompts around the deterministic goal-and-state package before wider retrieval
 
-### Phase 2: repo and document ingestion
+### Phase 3: repo and document ingestion
 
 - ingest docs, code structure, and sections
 - preserve raw-history references or page-store references for exact rehydration
@@ -289,30 +310,35 @@ The shared Memgraph target requires:
 - add provenance and exact source references
 - start procedural playbook capture for validated tactics and failure-avoidance patterns
 
-### Phase 3: anchors and hybrid retrieval
+### Phase 4: anchors and hybrid retrieval
 
 - compute initial anchor scores
 - add graph expansion and semantic support
 - preserve exact source rehydration paths
 
-### Phase 4: summaries and incremental compression
+### Phase 5: summaries and incremental compression
 
 - add L1 summaries and invariant extraction
 - protect control-plane memory from over-compression
 - add loss-risk tracking and drift checks
 
-### Phase 5: benchmark and inspection
+### Phase 6: benchmark and inspection
 
 - benchmark against sliding window, naive summary, vector-only, and graph-without-compression baselines
 - score plan retention, failure recall, constraint preservation, and task continuity
 - report quality under fixed budgets and cost at comparable quality levels
+- compare memory strategies across synthetic traces and Hugging Face task families before claiming one general solution
 
 ## Non-Negotiable Acceptance Criteria For Phase 1
 
-- The system can persist one active task with a plan and step statuses.
-- The system can record attempts, outcomes, failures, and lessons with provenance.
-- The system distinguishes hot-path session state from long-term durable memory.
-- The system distinguishes transient scratchpad artifacts from durable memory.
-- The retrieval package always returns objective, current plan, constraints, and latest relevant outcomes.
-- The design is isolated safely inside the shared Memgraph instance.
+- The system can run interrupted tasks and keep the final goal explicit in every resume packet.
+- The system can accept imported interrupted-task traces without requiring a hard-coded built-in scenario.
+- The system can record what the resume packet missed and turn that into concrete improvement actions.
+- Repeated misses can be compared across tasks instead of being buried in one-off logs.
+- The first durable schema is derived from repeated misses, not only from upfront design guesses.
+- The design preserves a clean path from local discovery artifacts to later graph-backed storage.
+- Synthetic traces and public Hugging Face datasets can both be adapted into the same interrupted-task evaluation format.
+- The wind tunnel can remove individual fields and report which removals cause the largest damage.
+- The deterministic resume packet continues to return objective, current plan, constraints, and latest relevant outcomes once the graph-backed store exists.
+- The design is isolated safely inside the shared Memgraph instance once storage moves to Memgraph.
 - The system can point back to exact supporting sources for any high-value memory item.
