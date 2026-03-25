@@ -61,6 +61,7 @@ python3 scripts/check_version_sync.py
 
 - [Tool brief](docs/PRD.md)
 - [Strategy](docs/strategy.md)
+- [Onboarding, Priming, And Learning](docs/onboarding_strategy.md)
 - [Integration strategy](docs/integration_strategy.md)
 - [Memory Wind Tunnel](docs/wind_tunnel.md)
 - [Logging And Observability](docs/observability.md)

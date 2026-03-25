@@ -17,6 +17,7 @@ Last updated: 2026-03-24
 - `docs/PRD.md` now states the tool purpose, scope, and success criteria in plain language.
 - `docs/strategy.md` now explains the tool-first development strategy and phased approach.
 - `docs/integration_strategy.md` now defines the planned platform-neutral integration strategy for HTTP, MCP, multi-agent use, and caching.
+- `docs/onboarding_strategy.md` now defines the planned onboarding, priming, and learning cycle for the next minor release.
 - `factory_context_compression_memgraph_design.md` contains a detailed design proposal for a Memgraph-based context compression system with anchor points.
 - The design proposal has now been ingested into the repo-local planning documents in `.codex/`.
 - The first batch of five external research documents has been assessed and folded into the repo-local planning documents.
@@ -34,6 +35,7 @@ Last updated: 2026-03-24
 - The prototype now writes `observability.json` and `wind_tunnel_observability.json` artifacts with timings, counts, and summary metrics.
 - The local workflow now includes a release-version sync check between `pyproject.toml` and the latest released section in `Chaneglog.md`.
 - The repo now has a documented hybrid integration plan: HTTP core service, MCP adapter, and CloudEvents-style event plane.
+- The repo now also has a documented onboarding plan: zero-touch bootstrap, generated starter packs, and evidence-driven refresh.
 - Built-in and imported synthetic traces now cover several task shapes, including tool-use dependencies.
 - Example imported traces now exist under `examples/interrupted_runs/`.
 - `tests/test_pipeline.py` now verifies the local discovery loop and the Hugging Face benchmark registry.
@@ -60,12 +62,15 @@ Last updated: 2026-03-24
 - No whole-strategy comparison beyond single-field ablations in the wind tunnel.
 - No centralized metrics dashboard or external tracing backend.
 - No HTTP core service, MCP adapter, shared cache, or event-bus integration is implemented yet.
+- No onboarding flow, generated starter pack, prompt adaptation step, or onboarding benchmark gate is implemented yet.
 
 ## Current Reality Check
 
 The repository now contains a real local discovery loop, a first strategy-comparison mechanism through the Memory Wind Tunnel, and basic local observability. It can surface what gets forgotten on resume, which removed fields hurt, and how long each stage took, but it does not yet compare full strategies across public datasets or persist and retrieve work through the target Memgraph architecture.
 
 The intended integration shape is now clearer than the implementation: one canonical HTTP service with MCP and event adapters, plus explicit multi-tenant caching and concurrency rules.
+
+The intended onboarding shape is also now clearer than the implementation: automatic workspace bootstrap first, optional YAML starter packs second, and cheap graph bootstrapping only as a provisional knowledge-plane accelerator.
 
 ## Suggested Near-Term Focus
 
@@ -75,5 +80,6 @@ The intended integration shape is now clearer than the implementation: one canon
 4. Extend the wind tunnel from single-field removal to whole-strategy comparison.
 5. Roll up per-run observability into cross-run summaries so strategy comparisons have time and cost context.
 6. Define the HTTP service contract, MCP adapter surface, and event contract in code.
-7. Define the project workspace boundary and bootstrap plan for the shared Memgraph instance on `odin:7697`.
-8. Keep compression and richer retrieval work behind verified multi-benchmark resume wins.
+7. Define the onboarding flow, generated starter pack format, and held-out onboarding benchmark gate in code.
+8. Define the project workspace boundary and bootstrap plan for the shared Memgraph instance on `odin:7697`.
+9. Keep compression and richer retrieval work behind verified multi-benchmark resume wins.

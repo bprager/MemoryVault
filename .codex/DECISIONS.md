@@ -213,3 +213,21 @@ Last updated: 2026-03-24
 - Status: active
 - Decision: design shared-agent operation around tenant and workspace isolation, optimistic concurrency, short-lived step leases, and explicit cache invalidation.
 - Why: once multiple agents share the memory system, concurrency and cache behavior affect correctness just as much as retrieval quality does.
+
+### 2026-03-24: Make onboarding zero-touch by default
+
+- Status: active
+- Decision: design the next onboarding release so a new workspace can be initialized without requiring a hand-authored ontology or manual graph preparation.
+- Why: mandatory preparation slows adoption, biases the schema too early, and conflicts with the project's tool-first goal.
+
+### 2026-03-24: Treat starter packs as optional soft hints
+
+- Status: active
+- Decision: support a generated YAML starter pack for source priority, candidate types, retrieval hints, and benchmark profiles, but keep it optional and regenerable.
+- Why: a soft hint layer can speed convergence without turning a hand-maintained file into the truth source.
+
+### 2026-03-24: Use semi-automatic graph creation only as provisional onboarding support
+
+- Status: active
+- Decision: use cheap graph bootstrapping and prompt adaptation to accelerate knowledge-plane onboarding, but do not let that provisional graph define control-plane truth.
+- Why: graph bootstrapping is useful for candidate structure and clustering, but it is too noisy and indirect to replace explicit task memory.

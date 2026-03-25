@@ -193,6 +193,18 @@ The current preferred integration shape is:
 
 The system should stay platform-neutral by keeping the core service contract independent from any one agent host or SDK.
 
+### 10. Become useful quickly in a new workspace
+
+MemoryVault should not require a human to hand-author an ontology before it works.
+
+The current preferred onboarding model is:
+
+- zero-touch initialization by default
+- a generated starter pack as an optional YAML hint layer
+- representative-sample adaptation and candidate type discovery
+- cheap provisional graph bootstrapping for the knowledge plane
+- held-out onboarding checks before promoted defaults are trusted
+
 ## What the tool should not do in v1
 
 - It should not try to solve every memory problem at once.
@@ -256,6 +268,7 @@ Today the project already has:
 - a local commit gate that requires Python linting, Markdown linting, passing tests, and at least 90% coverage
 - basic logging and observability artifacts for local runs
 - an integration strategy for HTTP, MCP, multi-agent coordination, and caching
+- an onboarding strategy for zero-touch priming, optional starter packs, and ongoing learning
 
 Today the project does not yet have:
 
@@ -267,12 +280,15 @@ Today the project does not yet have:
 - broad strategy comparison across multiple public task families
 - centralized dashboards or external tracing infrastructure
 - the planned HTTP core service, MCP adapter, event plane, or shared-cache layer
+- the planned onboarding flow, generated starter pack, benchmark gate, or refresh loop
 
 ## Open tool questions
 
 - Which repeated misses from the discovery loop should become first-class durable memory?
 - Which synthetic trace families are most informative before public benchmark adapters are built?
 - Which public Hugging Face datasets best cover cross-domain memory failure modes without pushing the tool into one narrow task style?
+- How much structure should be generated into the starter pack before the tool starts overfitting a workspace too early?
+- Which onboarding metrics best predict later usefulness: first-resume quality, field coverage, graph noise, or time-to-first-useful-run?
 - What belongs in Memgraph and what should stay in files or object storage?
 - How thin can the MCP adapter stay while the HTTP core remains the source of truth?
 - Which event broker should be the first real implementation target after the event contract is fixed?

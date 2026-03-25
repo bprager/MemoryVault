@@ -111,3 +111,11 @@ MCP is strong where agents need tools, resources, prompts, and transport flexibi
 ### Cache invalidation is part of memory correctness in multi-agent systems
 
 Once more than one agent can read and write the same task state, stale cached control-plane data is a correctness bug, not just a performance issue.
+
+### A hard ontology is a poor default for a tool that is still learning
+
+If the tool is supposed to discover what matters across different kinds of work, a mandatory ontology at onboarding time pushes it toward premature certainty. Soft hints are safer than hard commitments.
+
+### Fast graph bootstrapping is useful only if it stays provisional
+
+Cheap first-pass graph extraction can make onboarding faster, but it should feed discovery and ranking, not replace explicit goal, plan, and failure memory.

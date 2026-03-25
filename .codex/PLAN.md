@@ -8,6 +8,8 @@ Implementation has now started with a local discovery harness whose job is to re
 
 The next architecture layer is now defined at the design level: a platform-neutral integration boundary that lets the same memory system serve local agents, remote agents, and multi-agent systems without binding the core logic to one host runtime.
 
+The next product-learning layer is also now defined at the design level: a zero-touch onboarding cycle that gets a new workspace to a first useful state quickly and then keeps improving it through evidence.
+
 ## Goal From First Principles
 
 The tool exists to help an agent stay effective across long-running work while also learning which memory structure actually helps.
@@ -98,6 +100,18 @@ The system should expose three integration layers:
 
 This keeps the core platform-neutral while still making the tool easy for real agents to consume.
 
+### Onboarding split
+
+The onboarding layer should also be explicit:
+
+- `automatic bootstrap`: sample representative sources, infer domain hints, and generate a first workspace profile
+- `optional starter pack`: YAML hints for source priority, candidate types, retrieval policy, and benchmark profiles
+- `provisional knowledge bootstrap`: cheap graph extraction and prompt adaptation for the knowledge plane
+- `benchmark gate`: held-out onboarding checks before promoted defaults are trusted
+- `refresh loop`: revise the workspace profile from misses, drift, and changed source material
+
+This keeps manual setup optional while preserving a place for user hints when they help.
+
 ### Scratchpad layer
 
 The architecture should also make transient reasoning state explicit:
@@ -124,6 +138,18 @@ Caching should use:
 - L2 shared caching for task snapshots and resume packets
 - version-based invalidation plus event-driven fan-out
 - ETag and `If-Match` style validation for safe re-use and lost-update protection
+
+### Onboarding direction
+
+The fastest path to usefulness is not a mandatory ontology.
+
+The preferred path is:
+
+- fixed control-plane structure
+- generated starter packs as soft hints
+- representative-sample adaptation
+- cheap first-pass graph bootstrapping
+- measured promotion from onboarding benchmarks and later task misses
 
 ### Active task package
 
@@ -246,6 +272,16 @@ The StateAct paper reinforces that plan adherence is not just a storage problem.
 ### 13. Procedural memory should grow as curated playbooks
 
 The ACE paper shows the risk of context collapse from monolithic rewriting. MemoryVault should manage procedural memory as incrementally curated playbooks that retain detailed tactics, checks, and failure modes.
+
+### 14. Onboarding should prefer auto adaptation over manual tuning
+
+The current GraphRAG documentation is useful here: auto prompt tuning is encouraged, manual tuning is advanced, and fast indexing is a cheaper but noisier option.
+
+That suggests a practical onboarding rule for MemoryVault:
+
+- automatic adaptation first
+- optional soft hints second
+- manual ontology work only when the workspace truly needs it
 
 ## Retrieval Strategy
 

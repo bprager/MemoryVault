@@ -51,6 +51,19 @@ Good early benchmark groups:
 
 The point is not to specialize in those domains. The point is to see which memory behaviors survive across very different task shapes.
 
+### Phase 2.5: Onboarding and priming
+
+Before the durable schema hardens, add a zero-touch onboarding cycle that can:
+
+- sample representative sources
+- infer a first workspace profile
+- generate an optional starter pack
+- adapt extraction prompts
+- run a cheap first-pass knowledge bootstrap
+- test the result on held-out onboarding tasks
+
+The detailed design now lives in [docs/onboarding_strategy.md](onboarding_strategy.md).
+
 ### Phase 3: Memory field discovery
 
 Use repeated misses to propose candidate durable fields.
@@ -160,7 +173,8 @@ This keeps the tool honest. It also avoids shaping the architecture around one n
 
 1. Expand the synthetic trace library so the wind tunnel sees more than one or two memory patterns.
 2. Add Hugging Face adapters for at least one dataset from each major group: code, tool-use, long-memory conversation, and evidence-grounded documents.
-3. Lock down the integration contracts for the planned HTTP core, MCP adapter, and event plane.
-4. Compare whole memory strategies, not only single-field removals.
-5. Promote only the next few high-value fields, not a large schema all at once.
-6. Delay graph complexity until the tool can already show that its learned fields improve resume quality across several task families.
+3. Define the onboarding flow, generated starter pack, and benchmark gate for the next minor release.
+4. Lock down the integration contracts for the planned HTTP core, MCP adapter, and event plane.
+5. Compare whole memory strategies, not only single-field removals.
+6. Promote only the next few high-value fields, not a large schema all at once.
+7. Delay graph complexity until the tool can already show that its learned fields improve resume quality across several task families.

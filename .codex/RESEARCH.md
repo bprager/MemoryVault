@@ -193,6 +193,48 @@ Last updated: 2026-03-24
 - Key takeaway: conditional requests with validators are the standard way to revalidate cached responses and protect against lost updates.
 - Implication for MemoryVault: the shared-service design should use ETag, `If-None-Match`, and `If-Match` for read validation and concurrent write safety.
 
+### GraphRAG Auto Prompt Tuning
+
+- Source: `GraphRAG Auto Prompt Tuning`
+- URL: `https://microsoft.github.io/graphrag/prompt_tuning/auto_prompt_tuning/`
+- Key takeaway: domain-adapted prompt generation from representative input is highly encouraged, and automatic entity-type discovery is recommended for broad or highly varied data.
+- Implication for MemoryVault: onboarding should prefer automatic prompt adaptation over manual ontology preparation.
+
+### GraphRAG Prompt Tuning Overview
+
+- Source: `GraphRAG Prompt Tuning Overview`
+- URL: `https://microsoft.github.io/graphrag/prompt_tuning/overview/`
+- Key takeaway: default prompts work out of the box, auto tuning is encouraged, and manual tuning is an advanced path.
+- Implication for MemoryVault: zero-touch onboarding should be the default path, with manual starter-pack editing kept optional.
+
+### GraphRAG Methods
+
+- Source: `GraphRAG Methods`
+- URL: `https://microsoft.github.io/graphrag/index/methods/`
+- Key takeaway: the fast indexing method is cheaper and faster but noisier than the standard method.
+- Implication for MemoryVault: a fast first-pass graph build is useful for onboarding acceleration, but it should remain provisional.
+
+### GraphRAG Bring Your Own Graph
+
+- Source: `GraphRAG Bring Your Own Graph`
+- URL: `https://microsoft.github.io/graphrag/index/byog/`
+- Key takeaway: existing graphs can be brought into the workflow, but they are optional inputs rather than a required starting point.
+- Implication for MemoryVault: starter ontologies or custom graphs are useful optional hints, not prerequisites.
+
+### Few-NERD
+
+- Source: `Few-NERD dataset card`
+- URL: `https://huggingface.co/datasets/DFKI-SLT/few-nerd`
+- Key takeaway: the dataset provides coarse and fine-grained entity types suitable for evaluating type discovery and starter-pack quality.
+- Implication for MemoryVault: use it to benchmark onboarding-time candidate type discovery without relying on private corpora.
+
+### DocRED
+
+- Source: `DocRED dataset card`
+- URL: `https://huggingface.co/datasets/thunlp/docred`
+- Key takeaway: document-level relation extraction requires cross-sentence synthesis and is a useful stress test for relation discovery.
+- Implication for MemoryVault: use it to evaluate whether onboarding-time relation hints and provisional graphs are useful or too noisy.
+
 ## Working Conclusions
 
 1. The strongest memory systems do more than retrieve text. They preserve agent state across attempts.
@@ -217,6 +259,8 @@ Last updated: 2026-03-24
 20. Early benchmark coverage should span several task families so the tool does not mistake one domain's memory needs for a general rule.
 21. The best integration model is a hybrid: canonical HTTP service, MCP agent adapter, and async event plane.
 22. Multi-agent memory systems need explicit tenancy, concurrency, and cache-coherence design.
+23. Zero-touch onboarding should be the default, with manual structure treated as optional hints.
+24. Fast graph bootstrapping is useful for onboarding speed, but only as provisional knowledge-plane support.
 
 ## Intake Note
 

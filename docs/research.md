@@ -166,6 +166,26 @@ The main integration lesson is simple:
 
 That conclusion is what shaped the new integration design in `docs/integration_strategy.md`.
 
+## Onboarding-specific lessons
+
+The onboarding question is slightly different from the long-run storage question:
+
+- how do we become useful quickly in a new workspace?
+- how much structure should be inferred versus supplied?
+- how do we avoid requiring manual setup while still getting domain-adapted results?
+
+The most useful current lesson from Microsoft's GraphRAG documentation is that automatic prompt adaptation is the normal path, and manual tuning is the advanced path. That is a strong signal for MemoryVault too.
+
+The best current onboarding pattern appears to be:
+
+- infer from representative samples first
+- generate a soft workspace profile
+- treat starter ontologies as optional hint files
+- use cheap graph bootstrapping to get provisional structure fast
+- validate on held-out tasks before trusting promoted defaults
+
+That is why the new onboarding design in `docs/onboarding_strategy.md` favors generated starter packs over mandatory hand-authored ontologies.
+
 ## Current Bottom Line
 
 The research does not support starting with compression. It supports starting with reliable control-state memory, goal-aware retrieval, explicit state tracking, source-grounded durable memory, and carefully curated procedural playbooks. Compression and richer graph reasoning remain important, but only after the system can already remember what it is trying to do, what has happened so far, and what should happen next.

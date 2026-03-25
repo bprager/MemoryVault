@@ -278,3 +278,65 @@ Last updated: 2026-03-24
 - Core now: `OpenAPI`
 - Useful now: `MCP architecture`, `MCP transports`, `CloudEvents`, `NATS JetStream`, `OpenTelemetry`, `RFC 9110`
 - Rejected as irrelevant: none
+
+## Batch 5: Onboarding, Priming, And Graph Bootstrapping
+
+### 1. GraphRAG Auto Prompt Tuning
+
+- Source: `https://microsoft.github.io/graphrag/prompt_tuning/auto_prompt_tuning/`
+- Verdict: accept, useful now
+- Why it matters: it recommends automatic domain-adapted prompt generation and includes automatic entity-type discovery for broad or varied input.
+- Adopt now:
+  - use representative-source sampling during onboarding
+  - adapt extraction prompts automatically before assuming a hand-authored schema
+  - keep entity-type discovery automatic by default for mixed workspaces
+
+### 2. GraphRAG Prompt Tuning Overview
+
+- Source: `https://microsoft.github.io/graphrag/prompt_tuning/overview/`
+- Verdict: accept, useful now
+- Why it matters: it states that default prompts are the easiest starting point, auto tuning is encouraged, and manual tuning is advanced.
+- Adopt now:
+  - keep zero-touch onboarding as the primary path
+  - treat manual starter-pack edits as optional advanced behavior
+
+### 3. GraphRAG Methods
+
+- Source: `https://microsoft.github.io/graphrag/index/methods/`
+- Verdict: accept, useful now with caution
+- Why it matters: it explains the trade-off between richer but expensive standard graph extraction and cheaper but noisier fast extraction.
+- Adopt now:
+  - use a cheap first-pass graph build for onboarding acceleration
+  - keep that graph provisional and benchmarked
+- Keep the caution:
+  - do not let cheap graph extraction define durable control-plane truth
+
+### 4. GraphRAG Bring Your Own Graph
+
+- Source: `https://microsoft.github.io/graphrag/index/byog/`
+- Verdict: accept, useful now
+- Why it matters: it shows that existing graphs can be integrated without making them mandatory.
+- Adopt now:
+  - support starter ontologies or custom graphs as optional onboarding hints
+  - do not require users to provide them
+
+### 5. Few-NERD
+
+- Source: `https://huggingface.co/datasets/DFKI-SLT/few-nerd`
+- Verdict: accept, useful now
+- Why it matters: it provides coarse and fine-grained entity labels for evaluating candidate type discovery.
+- Adopt now:
+  - use it to test onboarding-time type discovery and starter-pack quality
+
+### 6. DocRED
+
+- Source: `https://huggingface.co/datasets/thunlp/docred`
+- Verdict: accept, useful now
+- Why it matters: it is a practical public benchmark for cross-sentence relation extraction.
+- Adopt now:
+  - use it to evaluate whether onboarding-time relation induction is useful or too noisy
+
+## Batch 5 Summary
+
+- Useful now: `GraphRAG auto prompt tuning`, `GraphRAG prompt tuning overview`, `GraphRAG methods`, `GraphRAG bring your own graph`, `Few-NERD`, `DocRED`
+- Rejected as irrelevant: none

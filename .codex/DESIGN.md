@@ -71,6 +71,14 @@ The current preferred integration shape is also now explicit:
 - an MCP adapter as the first-class agent interface
 - a broker-neutral event plane for asynchronous updates and cache invalidation
 
+The current preferred onboarding shape is now explicit too:
+
+- zero-touch initialization by default
+- generated starter packs as optional YAML hint files
+- prompt adaptation and candidate type discovery over representative samples
+- cheap provisional graph bootstrapping for the knowledge plane
+- held-out onboarding checks before defaults are trusted
+
 ## Goal-Conditioned Retrieval
 
 The design should follow a simple rule from first principles:
@@ -101,6 +109,20 @@ The architecture should also make temporary reasoning state explicit:
 - `working state`: the current session-local structured state that drives the next step
 
 Scratchpads may later produce durable memories, but they are not durable memories by default.
+
+## Onboarding layer
+
+The system should have a dedicated onboarding layer before durable storage hardens.
+
+Its job is to:
+
+- initialize a new workspace quickly
+- infer an initial workspace profile from representative sources
+- generate an optional starter pack
+- build provisional knowledge-plane structure
+- test whether the result is actually helpful
+
+The onboarding layer should not redefine the control plane. It should adapt and accelerate the knowledge plane around a stable control-plane core.
 
 ## Active Task Package
 
@@ -186,6 +208,21 @@ For durable declarative memory, the current preferred pattern is incremental upd
 
 This is a better starting point than unrestricted free-form rewriting of the whole memory base.
 
+## Starter packs
+
+The preferred role for a starter pack is:
+
+- optional
+- generated first, edited second
+- soft guidance for extraction and retrieval
+- safe to regenerate
+
+The preferred role for a starter pack is not:
+
+- mandatory ontology
+- permanent truth source
+- substitute for benchmark evidence
+
 ## Target Infrastructure
 
 - Primary graph target: Memgraph on host `odin`
@@ -235,3 +272,5 @@ The local discovery harness exists, but the graph-backed memory system still doe
 - Use ablation-style evaluation before hardening durable fields that sound important but may not matter in practice.
 - Keep the canonical service contract adapter-neutral so MCP, HTTP SDKs, and async workers all reuse the same rules.
 - Treat cache design and invalidation as part of correctness, not only as a performance optimization.
+- Keep manual onboarding optional; the default path must remain useful without hand-authored ontologies.
+- Treat first-pass graph extraction as provisional onboarding support, not as final memory truth.

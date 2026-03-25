@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A logging and observability guide in `docs/observability.md`.
 - A release-version sync check that keeps `pyproject.toml` aligned with the latest released section in `Chaneglog.md`.
 - A platform-neutral integration strategy covering HTTP, MCP, multi-agent use, and caching in `docs/integration_strategy.md`.
+- A release strategy for onboarding, priming, and learning in `docs/onboarding_strategy.md`.
 
 ### Changed
 
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The pipeline and wind tunnel now emit run lifecycle logs and save basic observability data.
 - The local quality gate now also checks release-version consistency before commit.
 - The project strategy, research summary, and product brief now reflect the planned hybrid integration model.
+- The project strategy and product brief now define zero-touch onboarding and optional starter packs as the preferred next release direction.
 
 ## [0.3.0] - 2026-03-24
 

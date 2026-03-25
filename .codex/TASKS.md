@@ -18,6 +18,7 @@ Last updated: 2026-03-24
 - Keep lifecycle logs and observability artifacts useful and lightweight.
 - Keep `pyproject.toml` and the latest released section in `Chaneglog.md` in sync.
 - Keep the integration design platform-neutral and centered on one canonical service boundary.
+- Keep onboarding zero-touch by default and manual preparation optional.
 
 ## Next
 
@@ -28,6 +29,9 @@ Last updated: 2026-03-24
 - Improve `recent_failures` extraction so weak or wrong attempts are retained even when they do not use the word `failed`.
 - Define the deterministic resume packet for general long-running work, including goal reminder and current-state header.
 - Define workspace isolation for the shared Memgraph instance on `odin:7697`.
+- Define the onboarding flow for the next release.
+- Define the generated starter pack schema and regeneration rules.
+- Define the onboarding benchmark gate and refresh loop.
 - Define the HTTP API contract that the MCP adapter and SDKs will share.
 - Define the CloudEvents event contract for invalidation, rebuilds, and async memory work.
 - Define the cache-key strategy, invalidation rules, and lease model for multi-agent use.
@@ -63,6 +67,7 @@ Last updated: 2026-03-24
 - Added Python logging and basic observability artifacts for scenario and wind tunnel runs.
 - Added a release-version sync check so future releases use the same version in `pyproject.toml` and `Chaneglog.md`.
 - Added a documented hybrid integration strategy for HTTP, MCP, multi-agent coordination, and caching.
+- Added a documented onboarding, priming, and learning strategy for the next minor release.
 
 ## Likely First Milestones
 
@@ -70,9 +75,9 @@ Last updated: 2026-03-24
 2. Next durable field promotions after `assumptions`
 3. Whole-strategy comparison across task families
 4. Cross-run observability summaries
-5. Canonical HTTP service contract and MCP adapter
-6. Cache and lease model for shared multi-agent use
-7. Workspace namespace and schema bootstrap
-8. Session store plus explicit task / plan / outcome graph
-9. Provenance and confidence model for durable memories
-10. Scratchpad and working-state lifecycle
+5. Onboarding flow, starter pack, and benchmark gate
+6. Canonical HTTP service contract and MCP adapter
+7. Cache and lease model for shared multi-agent use
+8. Workspace namespace and schema bootstrap
+9. Session store plus explicit task / plan / outcome graph
+10. Provenance and confidence model for durable memories

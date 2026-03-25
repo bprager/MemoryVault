@@ -35,6 +35,9 @@ Last updated: 2026-03-24
 - Cache keys must include enough identity and strategy context to prevent cross-tenant or cross-policy leakage.
 - Concurrent task updates must not rely on last-write-wins alone; they need explicit versioning or leases.
 - The canonical integration boundary should stay platform-neutral and must not assume one agent host or one programming language.
+- Onboarding must be useful without mandatory manual preparation.
+- Any starter ontology or starter pack must be optional and safe to ignore.
+- Semi-automatic graph creation must not be treated as sufficient evidence for control-plane truth.
 - At design time, assume no private real-world data.
 - Whenever non-simulated input is needed, prefer public Hugging Face datasets.
 - Public benchmark data should be adapted into interrupted-task resume checks instead of being treated only as one-shot benchmark scores.
@@ -51,3 +54,4 @@ Last updated: 2026-03-24
 - Planning should be revised critically before implementation instead of treating the first design as settled.
 - Discovery logs should stay inspectable and local so repeated misses can be reviewed before the durable schema is hardened.
 - MCP, HTTP, and event integrations should share one business-logic core rather than fork behavior across adapters.
+- Onboarding defaults should be benchmarked before they are promoted into durable workspace conventions.
