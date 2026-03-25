@@ -189,3 +189,27 @@ Last updated: 2026-03-24
 - Status: active
 - Decision: add a repo-local release check that compares `pyproject.toml` against the latest released version section in `Chaneglog.md`, and run it in the local quality gate.
 - Why: the `0.3.0` release was made consistent by hand, but that alignment should be enforced so future releases do not drift.
+
+### 2026-03-24: Use a canonical HTTP service as the main integration contract
+
+- Status: active
+- Decision: treat a versioned HTTP and JSON API, described with OpenAPI, as the source-of-truth service interface for MemoryVault.
+- Why: it is the cleanest cross-language and cross-platform contract, and it keeps the core memory rules independent from any single agent host or SDK.
+
+### 2026-03-24: Use MCP as the first-class agent adapter, not the only contract
+
+- Status: active
+- Decision: expose MemoryVault to agents through MCP, but implement MCP as a thin adapter over the canonical HTTP service.
+- Why: MCP is the strongest current interoperability layer for agent tools and resources, but it is not the best sole boundary for non-agent services, shared infrastructure, or generated SDKs.
+
+### 2026-03-24: Use a broker-neutral event plane for asynchronous work
+
+- Status: active
+- Decision: define asynchronous update, invalidation, and rebuild events in a CloudEvents-style contract, with NATS JetStream as the first likely implementation target.
+- Why: background memory work, cache invalidation, and fan-out are natural event-driven workflows, but the message contract should stay portable across broker choices.
+
+### 2026-03-24: Make tenancy, concurrency, and caching part of correctness
+
+- Status: active
+- Decision: design shared-agent operation around tenant and workspace isolation, optimistic concurrency, short-lived step leases, and explicit cache invalidation.
+- Why: once multiple agents share the memory system, concurrency and cache behavior affect correctness just as much as retrieval quality does.

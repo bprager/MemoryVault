@@ -31,6 +31,10 @@ Last updated: 2026-03-24
 - Durable declarative memory updates should be explicit and auditable rather than opaque whole-store rewrites.
 - Evaluation should include goal drift, repeated failure, and context-collapse cases rather than only retrieval accuracy.
 - The final goal should remain explicit in every resume packet during the discovery phase.
+- Shared-service use must enforce tenant and workspace isolation at the service, storage, and cache layers.
+- Cache keys must include enough identity and strategy context to prevent cross-tenant or cross-policy leakage.
+- Concurrent task updates must not rely on last-write-wins alone; they need explicit versioning or leases.
+- The canonical integration boundary should stay platform-neutral and must not assume one agent host or one programming language.
 - At design time, assume no private real-world data.
 - Whenever non-simulated input is needed, prefer public Hugging Face datasets.
 - Public benchmark data should be adapted into interrupted-task resume checks instead of being treated only as one-shot benchmark scores.
@@ -46,3 +50,4 @@ Last updated: 2026-03-24
 - User-authored or pre-existing files should not be overwritten casually, especially the large design note in the repo root.
 - Planning should be revised critically before implementation instead of treating the first design as settled.
 - Discovery logs should stay inspectable and local so repeated misses can be reviewed before the durable schema is hardened.
+- MCP, HTTP, and event integrations should share one business-logic core rather than fork behavior across adapters.

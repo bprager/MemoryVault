@@ -146,6 +146,26 @@ The current design assumption is that the tool begins without private production
 - Benchmarking should include plan adherence, failure avoidance, task completion, token cost, latency, and extra tool or retrieval steps.
 - Until real traces exist, benchmark input should come from synthetic traces and public Hugging Face datasets that can be converted into interrupted-task evaluations.
 
+## Official integration standards reviewed
+
+For the integration strategy, it was useful to review a small set of current standards and official docs rather than rely only on papers:
+
+- [Model Context Protocol](https://modelcontextprotocol.io/docs/learn/architecture) for agent-facing tools, resources, prompts, lifecycle, and transport choices
+- [MCP transports](https://modelcontextprotocol.io/specification/2024-11-05/basic/transports) for the current `stdio` and HTTP-based model
+- [OpenAPI](https://spec.openapis.org/oas/v3.1.1.html) for a language-agnostic HTTP contract
+- [CloudEvents](https://cloudevents.io/) for portable asynchronous event contracts
+- [NATS JetStream](https://docs.nats.io/nats-concepts/jetstream) and its [KV store](https://docs.nats.io/using-nats/developer/develop_jetstream/kv) for one practical first broker and cache-backplane target
+- [OpenTelemetry signals](https://opentelemetry.io/docs/concepts/signals/) and [context propagation](https://opentelemetry.io/docs/concepts/context-propagation/) for platform-neutral observability
+- [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110) for conditional HTTP requests that support cache validation and protect against lost updates
+
+The main integration lesson is simple:
+
+- MCP is the right agent adapter
+- HTTP is the right canonical service boundary
+- events are the right asynchronous coordination layer
+
+That conclusion is what shaped the new integration design in `docs/integration_strategy.md`.
+
 ## Current Bottom Line
 
 The research does not support starting with compression. It supports starting with reliable control-state memory, goal-aware retrieval, explicit state tracking, source-grounded durable memory, and carefully curated procedural playbooks. Compression and richer graph reasoning remain important, but only after the system can already remember what it is trying to do, what has happened so far, and what should happen next.

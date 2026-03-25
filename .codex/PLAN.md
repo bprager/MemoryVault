@@ -6,6 +6,8 @@ Last updated: 2026-03-24
 
 Implementation has now started with a local discovery harness whose job is to reveal what the system forgets on resume. The durable memory schema should be shaped by those observed misses before the Memgraph-backed thin slice is finalized, and the overall tool should begin with near-zero domain knowledge.
 
+The next architecture layer is now defined at the design level: a platform-neutral integration boundary that lets the same memory system serve local agents, remote agents, and multi-agent systems without binding the core logic to one host runtime.
+
 ## Goal From First Principles
 
 The tool exists to help an agent stay effective across long-running work while also learning which memory structure actually helps.
@@ -86,6 +88,16 @@ The architecture should keep three distinct layers:
 
 This follows directly from the research intake: sessions are the workbench, long-term memory is the curated filing cabinet, and the raw store remains the backstop when summaries are not enough.
 
+### Integration split
+
+The system should expose three integration layers:
+
+- `canonical service layer`: versioned HTTP and JSON API described with OpenAPI
+- `agent adapter layer`: MCP server over the canonical service, using `stdio` locally and Streamable HTTP remotely
+- `event layer`: broker-neutral CloudEvents for background work, subscriptions, and cache invalidation
+
+This keeps the core platform-neutral while still making the tool easy for real agents to consume.
+
 ### Scratchpad layer
 
 The architecture should also make transient reasoning state explicit:
@@ -93,6 +105,25 @@ The architecture should also make transient reasoning state explicit:
 - `scratchpad`: temporary task-scoped notes, intermediate calculations, draft hypotheses, and other ephemeral reasoning artifacts
 
 Scratchpad artifacts can be promoted into durable memory or archived into raw history after validation, but they should not automatically become durable memory.
+
+### Multi-agent coordination
+
+For shared use, the system should support:
+
+- `tenant_id` and `workspace_id` as hard isolation boundaries
+- `agent_id`, `session_id`, and `run_id` as actor and execution boundaries
+- optimistic concurrency for mutable task aggregates
+- short-lived step leases with heartbeat renewal
+- append-only event capture for chronology and auditing
+
+### Caching direction
+
+Caching should use:
+
+- L1 process-local caching for hot read paths
+- L2 shared caching for task snapshots and resume packets
+- version-based invalidation plus event-driven fan-out
+- ETag and `If-Match` style validation for safe re-use and lost-update protection
 
 ### Active task package
 
@@ -228,6 +259,8 @@ Use a hybrid strategy:
 6. rehydration of exact raw content only where precision is required
 
 Under token pressure, the last item to drop should be broad semantic detail, not task state or the goal-and-state header.
+
+The main synchronous retrieval surface should be the HTTP API and its MCP adapter. Heavier updates, rebuilds, and cache refreshes should move onto the asynchronous event plane.
 
 Retrieval ranking for durable memories should blend:
 

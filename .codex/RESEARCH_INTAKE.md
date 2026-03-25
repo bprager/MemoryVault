@@ -198,3 +198,83 @@ Last updated: 2026-03-24
 - Useful now: `Memory and the self`, `Agentic Context Engineering`, `StateAct`
 - Carry-forward duplicate: `Toward Efficient Agents`
 - Rejected as irrelevant: none
+
+## Batch 4: Official Integration Standards
+
+### 1. Model Context Protocol Architecture Overview
+
+- Source: `https://modelcontextprotocol.io/docs/learn/architecture`
+- Verdict: accept, useful now
+- Why it matters: it makes the host, client, and server split explicit, shows that MCP covers tools, resources, and prompts, and states that remote Streamable HTTP servers commonly serve many clients.
+- Adopt now:
+  - treat MCP as the primary agent-facing adapter
+  - support both local and remote agent integration modes
+  - keep the adapter thin over one shared business-logic core
+
+### 2. Model Context Protocol Transports
+
+- Source: `https://modelcontextprotocol.io/specification/2024-11-05/basic/transports`
+- Verdict: accept, useful now
+- Why it matters: it standardizes the local `stdio` transport and a remote HTTP-based transport for the same JSON-RPC protocol.
+- Adopt now:
+  - use `stdio` for local sidecar mode
+  - use remote HTTP transport for shared service mode
+  - avoid separate logic paths for local and remote agent integration
+
+### 3. OpenAPI Specification v3.1.1
+
+- Source: `https://spec.openapis.org/oas/v3.1.1.html`
+- Verdict: accept, core now
+- Why it matters: it provides a language-agnostic contract format for a stable HTTP API.
+- Adopt now:
+  - make the canonical MemoryVault service boundary a versioned HTTP and JSON API
+  - generate SDKs and tests from the OpenAPI contract where useful
+
+### 4. CloudEvents
+
+- Source: `https://cloudevents.io/`
+- Verdict: accept, useful now
+- Why it matters: it gives a portable event envelope across services, brokers, and programming languages.
+- Adopt now:
+  - define asynchronous update and invalidation events in a CloudEvents-style contract
+  - keep the event contract broker-neutral
+
+### 5. NATS JetStream and Key-Value Store
+
+- Sources:
+  - `https://docs.nats.io/nats-concepts/jetstream`
+  - `https://docs.nats.io/using-nats/developer/develop_jetstream/kv`
+- Verdict: accept, useful now
+- Why it matters: it is a practical first implementation target for durable async processing, shared cache state, watches, and CAS-style updates.
+- Adopt now:
+  - treat JetStream as the first likely broker and cache-backplane candidate
+  - use its KV semantics as a reference for shared-cache invalidation and coordination
+- Keep the caution:
+  - the MemoryVault event contract should not depend on JetStream-specific message shapes
+
+### 6. OpenTelemetry Concepts
+
+- Sources:
+  - `https://opentelemetry.io/docs/concepts/signals/`
+  - `https://opentelemetry.io/docs/concepts/context-propagation/`
+- Verdict: accept, useful now
+- Why it matters: it gives a common model for traces, metrics, logs, and propagated context across distributed components.
+- Adopt now:
+  - propagate tenant, workspace, task, session, and run identity through service calls and workers
+  - define one observability vocabulary across the service, adapter, and event plane
+
+### 7. RFC 9110
+
+- Source: `https://www.rfc-editor.org/rfc/rfc9110`
+- Verdict: accept, useful now
+- Why it matters: it defines conditional requests and validators for safe cache revalidation and write protection.
+- Adopt now:
+  - use ETag on read models such as resume packets
+  - use `If-None-Match` for efficient cache validation
+  - use `If-Match` to prevent lost updates on mutable task state
+
+## Batch 4 Summary
+
+- Core now: `OpenAPI`
+- Useful now: `MCP architecture`, `MCP transports`, `CloudEvents`, `NATS JetStream`, `OpenTelemetry`, `RFC 9110`
+- Rejected as irrelevant: none

@@ -110,7 +110,17 @@ At that point, Memgraph can become the long-term store for:
 
 The graph should come after field discovery, not before it.
 
-### Phase 6: Learning how to become effective
+### Phase 6: Platform-neutral integration
+
+Once the memory fields and retrieval bundles are clearer, expose the system through one shared integration shape:
+
+- a versioned HTTP core service
+- an MCP adapter for agents
+- an asynchronous event plane for background work and cache invalidation
+
+The detailed design now lives in [docs/integration_strategy.md](integration_strategy.md).
+
+### Phase 7: Learning how to become effective
 
 In the later phase, the tool should do more than remember. It should learn which memory policies make it better.
 
@@ -150,6 +160,7 @@ This keeps the tool honest. It also avoids shaping the architecture around one n
 
 1. Expand the synthetic trace library so the wind tunnel sees more than one or two memory patterns.
 2. Add Hugging Face adapters for at least one dataset from each major group: code, tool-use, long-memory conversation, and evidence-grounded documents.
-3. Compare whole memory strategies, not only single-field removals.
-4. Promote only the next few high-value fields, not a large schema all at once.
-5. Delay graph complexity until the tool can already show that its learned fields improve resume quality across several task families.
+3. Lock down the integration contracts for the planned HTTP core, MCP adapter, and event plane.
+4. Compare whole memory strategies, not only single-field removals.
+5. Promote only the next few high-value fields, not a large schema all at once.
+6. Delay graph complexity until the tool can already show that its learned fields improve resume quality across several task families.

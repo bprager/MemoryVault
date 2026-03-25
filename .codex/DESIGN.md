@@ -65,6 +65,12 @@ The wind tunnel is the first concrete mechanism for that comparison. It currentl
 
 The observability layer is intentionally basic for now: standard Python logging plus per-run JSON artifacts. That is enough to support later strategy comparison without requiring external infrastructure yet.
 
+The current preferred integration shape is also now explicit:
+
+- a versioned HTTP and JSON core service as the canonical contract
+- an MCP adapter as the first-class agent interface
+- a broker-neutral event plane for asynchronous updates and cache invalidation
+
 ## Goal-Conditioned Retrieval
 
 The design should follow a simple rule from first principles:
@@ -157,6 +163,18 @@ The memory manager should expose a stable high-level interface even if the inter
 
 This keeps the current design compatible with future pluggable or learned memory strategies without forcing them into phase 1.
 
+## Integration boundary
+
+The service boundary should not be a Python-only library API.
+
+The design should instead assume:
+
+- a canonical HTTP service boundary for cross-language consumers
+- MCP as a thin adapter over that service
+- asynchronous event consumers for consolidation, rebuilds, and observability rollups
+
+This keeps the tool platform-neutral and makes it usable as shared infrastructure.
+
 ## Declarative Memory Update Pattern
 
 For durable declarative memory, the current preferred pattern is incremental update with explicit operations such as:
@@ -179,6 +197,10 @@ Because the target is shared, the design must use strict workspace isolation fro
 ## Expected Major Components
 
 - task / plan / outcome state model
+- HTTP command and query service
+- MCP adapter
+- cache manager with L1 and L2 layers
+- event contract and background workers
 - ingestion of code, documents, and task activity
 - Memgraph-backed storage and relationships
 - anchor scoring and promotion / demotion
@@ -211,3 +233,5 @@ The local discovery harness exists, but the graph-backed memory system still doe
 - Prefer local-first workflows and inspectable state.
 - Use synthetic traces and Hugging Face public datasets until real traces exist.
 - Use ablation-style evaluation before hardening durable fields that sound important but may not matter in practice.
+- Keep the canonical service contract adapter-neutral so MCP, HTTP SDKs, and async workers all reuse the same rules.
+- Treat cache design and invalidation as part of correctness, not only as a performance optimization.

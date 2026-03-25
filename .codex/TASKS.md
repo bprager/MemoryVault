@@ -17,6 +17,7 @@ Last updated: 2026-03-24
 - Keep the 90% coverage and lint gates green as the tool grows.
 - Keep lifecycle logs and observability artifacts useful and lightweight.
 - Keep `pyproject.toml` and the latest released section in `Chaneglog.md` in sync.
+- Keep the integration design platform-neutral and centered on one canonical service boundary.
 
 ## Next
 
@@ -27,6 +28,9 @@ Last updated: 2026-03-24
 - Improve `recent_failures` extraction so weak or wrong attempts are retained even when they do not use the word `failed`.
 - Define the deterministic resume packet for general long-running work, including goal reminder and current-state header.
 - Define workspace isolation for the shared Memgraph instance on `odin:7697`.
+- Define the HTTP API contract that the MCP adapter and SDKs will share.
+- Define the CloudEvents event contract for invalidation, rebuilds, and async memory work.
+- Define the cache-key strategy, invalidation rules, and lease model for multi-agent use.
 - Extend strategy comparison from single-field ablations to whole memory-policy comparisons.
 - Add cross-run observability summaries so strategy comparisons include time and stage cost.
 - Define the scratchpad or working-state lifecycle explicitly.
@@ -58,6 +62,7 @@ Last updated: 2026-03-24
 - Added a local quality gate and pre-commit hook with 90% coverage plus Python and Markdown linting.
 - Added Python logging and basic observability artifacts for scenario and wind tunnel runs.
 - Added a release-version sync check so future releases use the same version in `pyproject.toml` and `Chaneglog.md`.
+- Added a documented hybrid integration strategy for HTTP, MCP, multi-agent coordination, and caching.
 
 ## Likely First Milestones
 
@@ -65,9 +70,9 @@ Last updated: 2026-03-24
 2. Next durable field promotions after `assumptions`
 3. Whole-strategy comparison across task families
 4. Cross-run observability summaries
-5. Workspace namespace and schema bootstrap
-6. Session store plus explicit task / plan / outcome graph
-7. Provenance and confidence model for durable memories
-8. Scratchpad and working-state lifecycle
-9. Deterministic task package with explicit goal and current-state header
-10. Hybrid retrieval with graph expansion and semantic support
+5. Canonical HTTP service contract and MCP adapter
+6. Cache and lease model for shared multi-agent use
+7. Workspace namespace and schema bootstrap
+8. Session store plus explicit task / plan / outcome graph
+9. Provenance and confidence model for durable memories
+10. Scratchpad and working-state lifecycle

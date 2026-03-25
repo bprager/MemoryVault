@@ -103,3 +103,11 @@ You do not need a full telemetry stack to make progress. Local logs plus per-run
 ### Release consistency should be checked automatically, not remembered manually
 
 The release notes and the version file lined up for `0.3.0`, but only because they were handled carefully by hand. A small automated sync check is cheap and prevents future drift.
+
+### MCP is the right agent adapter, not the whole infrastructure contract
+
+MCP is strong where agents need tools, resources, prompts, and transport flexibility. A shared memory system still benefits from one canonical HTTP service boundary underneath it.
+
+### Cache invalidation is part of memory correctness in multi-agent systems
+
+Once more than one agent can read and write the same task state, stale cached control-plane data is a correctness bug, not just a performance issue.

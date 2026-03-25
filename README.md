@@ -40,6 +40,7 @@ Today it can:
 - verify that the project version and latest changelog release stay in sync
 
 It does not yet connect to Memgraph or learn from live production traces.
+It also does not yet implement the planned shared-service or MCP integration design.
 
 ## Try it
 
@@ -60,6 +61,7 @@ python3 scripts/check_version_sync.py
 
 - [Tool brief](docs/PRD.md)
 - [Strategy](docs/strategy.md)
+- [Integration strategy](docs/integration_strategy.md)
 - [Memory Wind Tunnel](docs/wind_tunnel.md)
 - [Logging And Observability](docs/observability.md)
 - [Research summary](docs/research.md)

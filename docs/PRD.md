@@ -176,6 +176,23 @@ MemoryVault should improve continuity without creating runaway cost.
 
 Success is not only better recall. Success is better recall at a reasonable token, latency, and retrieval cost.
 
+### 9. Integrate cleanly with real agents
+
+MemoryVault should be able to serve:
+
+- one local agent
+- one remote agent
+- many agents sharing the same workspace
+- non-agent systems such as workflow runners or evaluation harnesses
+
+The current preferred integration shape is:
+
+- a versioned HTTP and JSON core service
+- an MCP adapter for agent-native access
+- an asynchronous event plane for background work and cache invalidation
+
+The system should stay platform-neutral by keeping the core service contract independent from any one agent host or SDK.
+
 ## What the tool should not do in v1
 
 - It should not try to solve every memory problem at once.
@@ -238,6 +255,7 @@ Today the project already has:
 - a registry of Hugging Face benchmark leads for later evaluation
 - a local commit gate that requires Python linting, Markdown linting, passing tests, and at least 90% coverage
 - basic logging and observability artifacts for local runs
+- an integration strategy for HTTP, MCP, multi-agent coordination, and caching
 
 Today the project does not yet have:
 
@@ -248,6 +266,7 @@ Today the project does not yet have:
 - Hugging Face dataset adapters wired into the codebase
 - broad strategy comparison across multiple public task families
 - centralized dashboards or external tracing infrastructure
+- the planned HTTP core service, MCP adapter, event plane, or shared-cache layer
 
 ## Open tool questions
 
@@ -255,6 +274,8 @@ Today the project does not yet have:
 - Which synthetic trace families are most informative before public benchmark adapters are built?
 - Which public Hugging Face datasets best cover cross-domain memory failure modes without pushing the tool into one narrow task style?
 - What belongs in Memgraph and what should stay in files or object storage?
+- How thin can the MCP adapter stay while the HTTP core remains the source of truth?
+- Which event broker should be the first real implementation target after the event contract is fixed?
 - How should procedural playbooks be reviewed, updated, and retired?
 - How much human curation should be required before durable memory changes?
 - What is the right default boundary between fast retrieval and deeper rehydration?

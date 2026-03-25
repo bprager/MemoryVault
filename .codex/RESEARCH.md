@@ -137,6 +137,62 @@ Last updated: 2026-03-24
 - Key takeaway: agents adhere better over long interactions when they explicitly restate the goal and track current state.
 - Implication for MemoryVault: runtime prompt assembly should always include an explicit goal reminder and structured current-state section.
 
+### Model Context Protocol Architecture
+
+- Source: `Model Context Protocol Architecture Overview`
+- URL: `https://modelcontextprotocol.io/docs/learn/architecture`
+- Key takeaway: MCP separates host, client, and server, supports tools, resources, and prompts, and remote Streamable HTTP servers are designed to serve multiple clients.
+- Implication for MemoryVault: MCP is a strong agent-facing adapter for both local and remote use, but it should sit over a stable service core.
+
+### MCP Transports
+
+- Source: `Model Context Protocol Transports`
+- URL: `https://modelcontextprotocol.io/specification/2024-11-05/basic/transports`
+- Key takeaway: MCP standardizes local `stdio` and remote HTTP-based transports for the same JSON-RPC protocol.
+- Implication for MemoryVault: one MCP adapter can cover both local sidecar and shared-service deployment modes.
+
+### OpenAPI
+
+- Source: `OpenAPI Specification v3.1.1`
+- URL: `https://spec.openapis.org/oas/v3.1.1.html`
+- Key takeaway: OpenAPI defines a language-agnostic way to describe HTTP APIs so humans and machines can understand them with minimal implementation logic.
+- Implication for MemoryVault: the canonical service contract should be a versioned HTTP and JSON API described with OpenAPI.
+
+### CloudEvents
+
+- Source: `CloudEvents`
+- URL: `https://cloudevents.io/`
+- Key takeaway: CloudEvents standardizes event metadata and payload description across systems and languages.
+- Implication for MemoryVault: asynchronous update, invalidation, and observability events should use a portable event envelope.
+
+### NATS JetStream
+
+- Source: `NATS JetStream`
+- URL: `https://docs.nats.io/nats-concepts/jetstream`
+- Key takeaway: JetStream provides durable streams and related storage primitives suitable for asynchronous infrastructure work.
+- Implication for MemoryVault: JetStream is a strong first implementation target for the event plane and cache backplane.
+
+### NATS JetStream Key-Value
+
+- Source: `NATS JetStream Key-Value Store`
+- URL: `https://docs.nats.io/using-nats/developer/develop_jetstream/kv`
+- Key takeaway: the KV layer supports watchable keys and CAS-style updates.
+- Implication for MemoryVault: it is a practical candidate for shared cache metadata, lightweight coordination, and invalidation state.
+
+### OpenTelemetry
+
+- Source: `OpenTelemetry Concepts`
+- URL: `https://opentelemetry.io/docs/concepts/signals/`
+- Key takeaway: traces, metrics, and logs should share one observability model with propagated context across service boundaries.
+- Implication for MemoryVault: service, adapter, worker, and broker integrations should share one tracing and metrics vocabulary from the start.
+
+### HTTP Semantics
+
+- Source: `RFC 9110`
+- URL: `https://www.rfc-editor.org/rfc/rfc9110`
+- Key takeaway: conditional requests with validators are the standard way to revalidate cached responses and protect against lost updates.
+- Implication for MemoryVault: the shared-service design should use ETag, `If-None-Match`, and `If-Match` for read validation and concurrent write safety.
+
 ## Working Conclusions
 
 1. The strongest memory systems do more than retrieve text. They preserve agent state across attempts.
@@ -159,6 +215,8 @@ Last updated: 2026-03-24
 18. Procedural memory should grow through structured incremental playbooks rather than monolithic rewriting.
 19. A tool-first memory project should begin with synthetic traces and public datasets if private production traces do not yet exist.
 20. Early benchmark coverage should span several task families so the tool does not mistake one domain's memory needs for a general rule.
+21. The best integration model is a hybrid: canonical HTTP service, MCP agent adapter, and async event plane.
+22. Multi-agent memory systems need explicit tenancy, concurrency, and cache-coherence design.
 
 ## Intake Note
 
