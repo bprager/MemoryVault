@@ -132,3 +132,21 @@ class WindTunnelReport:
     variant_results: list[WindTunnelVariantResult]
     field_impacts: list[WindTunnelFieldImpact]
     most_fragile_fields: list[str]
+
+
+@dataclass(slots=True)
+class RunObservability:
+    run_id: str
+    scenario_id: str
+    mode: str
+    started_at: str
+    finished_at: str
+    total_duration_ms: int
+    stage_durations_ms: dict[str, int]
+    event_count: int
+    candidate_count: int
+    source_count: int
+    check_count: int
+    score: float
+    wind_tunnel_variant_count: int = 0
+    most_fragile_fields: list[str] = field(default_factory=list)

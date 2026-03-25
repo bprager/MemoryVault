@@ -177,3 +177,15 @@ Last updated: 2026-03-24
 - Status: active
 - Decision: require passing Python linting, Markdown linting, tests, and at least 90% coverage through a repo-local quality script and pre-commit hook.
 - Why: the project is still small enough that strict local gates are cheap, and they prevent fast-moving design work from silently lowering implementation quality.
+
+### 2026-03-24: Start observability with standard Python logging plus local artifacts
+
+- Status: active
+- Decision: add Python `logging` lifecycle messages and per-run JSON observability artifacts before introducing heavier monitoring infrastructure.
+- Why: the tool needs enough observability to compare strategies and debug runs, but it is too early to justify a centralized stack.
+
+### 2026-03-24: Enforce release-version sync against `Chaneglog.md`
+
+- Status: active
+- Decision: add a repo-local release check that compares `pyproject.toml` against the latest released version section in `Chaneglog.md`, and run it in the local quality gate.
+- Why: the `0.3.0` release was made consistent by hand, but that alignment should be enforced so future releases do not drift.

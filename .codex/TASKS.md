@@ -15,6 +15,8 @@ Last updated: 2026-03-24
 - Keep the tool domain-agnostic until repeated evidence justifies specialization.
 - Use synthetic traces or Hugging Face datasets whenever test inputs are needed.
 - Keep the 90% coverage and lint gates green as the tool grows.
+- Keep lifecycle logs and observability artifacts useful and lightweight.
+- Keep `pyproject.toml` and the latest released section in `Chaneglog.md` in sync.
 
 ## Next
 
@@ -26,6 +28,7 @@ Last updated: 2026-03-24
 - Define the deterministic resume packet for general long-running work, including goal reminder and current-state header.
 - Define workspace isolation for the shared Memgraph instance on `odin:7697`.
 - Extend strategy comparison from single-field ablations to whole memory-policy comparisons.
+- Add cross-run observability summaries so strategy comparisons include time and stage cost.
 - Define the scratchpad or working-state lifecycle explicitly.
 - Define declarative memory update operations and conflict handling.
 - Define how procedural playbooks should grow, refine, and retire without monolithic rewrites.
@@ -53,16 +56,18 @@ Last updated: 2026-03-24
 - Added a tool-first strategy note and a zero-domain-knowledge data policy.
 - Added a Memory Wind Tunnel that removes memory fields and measures the damage.
 - Added a local quality gate and pre-commit hook with 90% coverage plus Python and Markdown linting.
+- Added Python logging and basic observability artifacts for scenario and wind tunnel runs.
+- Added a release-version sync check so future releases use the same version in `pyproject.toml` and `Chaneglog.md`.
 
 ## Likely First Milestones
 
 1. Synthetic and Hugging Face benchmark adapters
 2. Next durable field promotions after `assumptions`
 3. Whole-strategy comparison across task families
-4. Workspace namespace and schema bootstrap
-5. Session store plus explicit task / plan / outcome graph
-6. Provenance and confidence model for durable memories
-7. Scratchpad and working-state lifecycle
-8. Deterministic task package with explicit goal and current-state header
-9. Hybrid retrieval with graph expansion and semantic support
-10. Compression and summary layers
+4. Cross-run observability summaries
+5. Workspace namespace and schema bootstrap
+6. Session store plus explicit task / plan / outcome graph
+7. Provenance and confidence model for durable memories
+8. Scratchpad and working-state lifecycle
+9. Deterministic task package with explicit goal and current-state header
+10. Hybrid retrieval with graph expansion and semantic support

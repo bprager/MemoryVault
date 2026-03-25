@@ -237,6 +237,7 @@ Today the project already has:
 - built-in and imported synthetic traces for several task shapes
 - a registry of Hugging Face benchmark leads for later evaluation
 - a local commit gate that requires Python linting, Markdown linting, passing tests, and at least 90% coverage
+- basic logging and observability artifacts for local runs
 
 Today the project does not yet have:
 
@@ -246,6 +247,7 @@ Today the project does not yet have:
 - live production traces
 - Hugging Face dataset adapters wired into the codebase
 - broad strategy comparison across multiple public task families
+- centralized dashboards or external tracing infrastructure
 
 ## Open tool questions
 

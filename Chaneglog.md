@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Python `logging`-based lifecycle logging with CLI-controlled log level and optional log file output.
+- Per-run `observability.json` artifacts with timings, counts, and summary metrics.
+- Per-run `wind_tunnel_observability.json` artifacts for wind tunnel runs.
+- A logging and observability guide in `docs/observability.md`.
+- A release-version sync check that keeps `pyproject.toml` aligned with the latest released section in `Chaneglog.md`.
+
+### Changed
+
+- The CLI now supports `--log-level` and `--log-file`.
+- The pipeline and wind tunnel now emit run lifecycle logs and save basic observability data.
+- The local quality gate now also checks release-version consistency before commit.
+
 ## [0.3.0] - 2026-03-24
 
 ### Added

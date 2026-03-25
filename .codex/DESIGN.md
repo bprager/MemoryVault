@@ -27,6 +27,7 @@ The repository now includes a small local discovery harness that:
 - records improvement actions for the next iteration,
 - aggregates repeated misses into candidate durable fields,
 - runs a Memory Wind Tunnel that removes fields and measures the damage.
+- emits lifecycle logs and writes local observability artifacts with stage timings and summary counts.
 
 This harness is intentionally narrower than the final architecture. Its purpose is to help derive the durable memory model from observed failures before wiring the full graph-backed system.
 
@@ -61,6 +62,8 @@ The control plane is the highest-priority memory layer. Retrieval should always 
 The tool should not assume that one domain teaches the right memory model. The early architecture therefore needs to support repeated comparison across synthetic and public task families.
 
 The wind tunnel is the first concrete mechanism for that comparison. It currently performs single-field ablations over the resume packet. Later it should grow into whole-strategy comparison.
+
+The observability layer is intentionally basic for now: standard Python logging plus per-run JSON artifacts. That is enough to support later strategy comparison without requiring external infrastructure yet.
 
 ## Goal-Conditioned Retrieval
 

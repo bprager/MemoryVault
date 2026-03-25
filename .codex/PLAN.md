@@ -277,6 +277,7 @@ The shared Memgraph target requires:
 - use the observed misses to shape the first durable memory model
 - promote fields only after repeated misses justify them
 - run a wind tunnel that removes one field at a time and measures the resulting damage
+- record lifecycle logs and per-run observability artifacts from the start
 
 ### Phase 1: schema and workspace review
 
@@ -328,6 +329,7 @@ The shared Memgraph target requires:
 - score plan retention, failure recall, constraint preservation, and task continuity
 - report quality under fixed budgets and cost at comparable quality levels
 - compare memory strategies across synthetic traces and Hugging Face task families before claiming one general solution
+- include runtime and stage-cost summaries from the observability layer, not only quality scores
 
 ## Non-Negotiable Acceptance Criteria For Phase 1
 

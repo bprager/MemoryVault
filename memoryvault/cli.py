@@ -4,6 +4,7 @@ import argparse
 import json
 from dataclasses import asdict
 
+from .logging_utils import configure_logging
 from .models import WindTunnelReport
 from .pipeline import run_demo, run_scenario, run_scenario_file, run_wind_tunnel_file, run_wind_tunnel_scenario
 from .public_data import list_public_data
@@ -13,6 +14,8 @@ from .scenarios import list_scenarios
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="MemoryVault discovery loop CLI")
+    parser.add_argument("--log-level", default="WARNING", help="Python logging level: DEBUG, INFO, WARNING, or ERROR")
+    parser.add_argument("--log-file", default=None, help="Optional path for a log file")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     list_parser = subparsers.add_parser("list-scenarios", help="List built-in interrupted task scenarios")
@@ -51,6 +54,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    configure_logging(level=args.log_level, log_file=args.log_file)
 
     if args.command == "list-scenarios":
         scenarios = list_scenarios()

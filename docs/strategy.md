@@ -123,6 +123,18 @@ That means:
 
 The end state is a memory tool that improves by observing its own successes and misses.
 
+### Cross-cutting requirement: observability
+
+Every phase should stay observable.
+
+That means:
+
+- lifecycle logs for runs and wind tunnels
+- per-run timing artifacts
+- enough summary data to compare strategy cost and damage later
+
+This is now started in [docs/observability.md](observability.md), but it should grow as the strategy-comparison layer grows.
+
 ## Data policy
 
 At design time, do not assume access to real production traces.

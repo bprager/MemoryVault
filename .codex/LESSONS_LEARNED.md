@@ -95,3 +95,11 @@ As soon as the tool can remove one memory field at a time and measure the damage
 ### Strict quality gates are cheap while the project is small
 
 Coverage, linting, and Markdown checks are much easier to enforce now than after the repo grows. Set the bar early and keep it there.
+
+### Basic observability is enough to start if it captures timings and counts
+
+You do not need a full telemetry stack to make progress. Local logs plus per-run timing artifacts are enough to support early strategy comparison and debugging.
+
+### Release consistency should be checked automatically, not remembered manually
+
+The release notes and the version file lined up for `0.3.0`, but only because they were handled carefully by hand. A small automated sync check is cheap and prevents future drift.

@@ -32,9 +32,12 @@ Today it can:
 - build a resume packet with an explicit goal guard
 - run a Memory Wind Tunnel that removes memory fields and measures the damage
 - keep assumptions as a first promoted durable field after repeated misses
+- log run lifecycle events through Python logging
+- write per-run observability artifacts with timings and counts
 - score what the system forgot and log improvement targets
 - suggest new durable fields from repeated misses
 - list Hugging Face benchmark leads for later evaluation
+- verify that the project version and latest changelog release stay in sync
 
 It does not yet connect to Memgraph or learn from live production traces.
 
@@ -45,9 +48,11 @@ python3 -m memoryvault list-scenarios
 python3 -m memoryvault demo
 python3 -m memoryvault run-file examples/interrupted_runs/swe_bench_like_bugfix.json
 python3 -m memoryvault run-file examples/interrupted_runs/taskbench_like_tool_chain.json
+python3 -m memoryvault --log-level INFO --log-file /tmp/memoryvault.log run-file examples/interrupted_runs/taskbench_like_tool_chain.json
 python3 -m memoryvault wind-tunnel-file examples/interrupted_runs/taskbench_like_tool_chain.json
 python3 -m memoryvault suggest-fields --threshold 1
 python3 -m memoryvault list-public-data
+python3 scripts/check_version_sync.py
 ./scripts/check_quality.sh
 ```
 
@@ -56,5 +61,6 @@ python3 -m memoryvault list-public-data
 - [Tool brief](docs/PRD.md)
 - [Strategy](docs/strategy.md)
 - [Memory Wind Tunnel](docs/wind_tunnel.md)
+- [Logging And Observability](docs/observability.md)
 - [Research summary](docs/research.md)
 - [Design note](factory_context_compression_memgraph_design.md)

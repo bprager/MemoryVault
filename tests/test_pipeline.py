@@ -11,6 +11,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from memoryvault.cli import main as cli_main
+from memoryvault.logging_utils import configure_logging
 from memoryvault.pipeline import run_demo, run_scenario, run_scenario_file, run_wind_tunnel_file, run_wind_tunnel_scenario
 from memoryvault.public_data import list_public_data
 from memoryvault.promotion import suggest_durable_fields
@@ -106,6 +107,31 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertIn("suggestions:", output)
 
+    def test_cli_logging_and_observability_artifacts_are_created(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "memoryvault.log"
+            exit_code, output = self.capture_cli(
+                "--log-level",
+                "INFO",
+                "--log-file",
+                str(log_path),
+                "run-file",
+                "examples/interrupted_runs/taskbench_like_tool_chain.json",
+                "--base-dir",
+                temp_dir,
+            )
+            self.assertEqual(exit_code, 0)
+            self.assertTrue(log_path.exists())
+            log_text = log_path.read_text(encoding="utf-8")
+            self.assertIn("starting scenario run", log_text)
+            self.assertIn("completed scenario run", log_text)
+
+            artifact_path = Path(output.splitlines()[0].split(": ", 1)[1]) / "observability.json"
+            observability = json.loads(artifact_path.read_text(encoding="utf-8"))
+            self.assertEqual(observability["mode"], "scenario")
+            self.assertGreaterEqual(observability["total_duration_ms"], 0)
+            self.assertIn("extract_candidates", observability["stage_durations_ms"])
+
     def test_package_main_module_invokes_cli(self) -> None:
         buffer = io.StringIO()
         with redirect_stdout(buffer), patch.object(sys, "argv", ["memoryvault", "list-scenarios"]):
@@ -146,6 +172,15 @@ class PipelineTests(unittest.TestCase):
             self.assertTrue(run_dir.exists())
             self.assertGreaterEqual(report.baseline_score, 0.95)
             self.assertTrue(any(result.variant_id == "goal_only" for result in report.variant_results))
+            observability = json.loads((run_dir / "wind_tunnel_observability.json").read_text(encoding="utf-8"))
+            self.assertEqual(observability["mode"], "wind_tunnel")
+            self.assertEqual(observability["wind_tunnel_variant_count"], len(report.variant_results))
+
+    def test_logging_configuration_resets_handlers_cleanly(self) -> None:
+        logger = configure_logging(level="INFO")
+        self.assertEqual(logger.level, 20)
+        logger = configure_logging(level="ERROR")
+        self.assertEqual(logger.level, 40)
 
 
 if __name__ == "__main__":
