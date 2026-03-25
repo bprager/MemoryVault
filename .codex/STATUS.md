@@ -13,7 +13,7 @@ Last updated: 2026-03-24
 - `main.py` now forwards to a working CLI for the local discovery prototype.
 - `pyproject.toml` still defines a very small Python project with basic metadata and minimal declared dependencies, including `mypy` for local type checks.
 - `README.md` now gives a brief repo overview instead of a placeholder.
-- `Chaneglog.md` now exists in the repo root as the project changelog.
+- `Changelog.md` now exists in the repo root as the project changelog.
 - `docs/PRD.md` now states the tool purpose, scope, and success criteria in plain language.
 - `docs/strategy.md` now explains the tool-first development strategy and phased approach.
 - `docs/integration_strategy.md` now defines the planned platform-neutral integration strategy for HTTP, MCP, multi-agent use, and caching.
@@ -33,7 +33,7 @@ Last updated: 2026-03-24
 - The prototype now includes a Memory Wind Tunnel that reruns the same task with fields removed and measures the damage.
 - The prototype now includes Python `logging`-based lifecycle logs with CLI-controlled level and optional file output.
 - The prototype now writes `observability.json` and `wind_tunnel_observability.json` artifacts with timings, counts, and summary metrics.
-- The local workflow now includes a release-version sync check between `pyproject.toml` and the latest released section in `Chaneglog.md`.
+- The local workflow now includes a release-version sync check between `pyproject.toml` and the latest released section in `Changelog.md`.
 - The repo now has a documented hybrid integration plan: HTTP core service, MCP adapter, and CloudEvents-style event plane.
 - The repo now also has a documented onboarding plan: zero-touch bootstrap, generated starter packs, and evidence-driven refresh.
 - Built-in and imported synthetic traces now cover several task shapes, including tool-use dependencies.

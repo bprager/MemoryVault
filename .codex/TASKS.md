@@ -5,7 +5,7 @@ Last updated: 2026-03-24
 ## Active
 
 - Maintain `.codex/` as the codebase evolves.
-- Keep `Chaneglog.md` current when notable project changes are made.
+- Keep `Changelog.md` current when notable project changes are made.
 - Keep `docs/PRD.md` current as the tool definition changes.
 - Maintain `docs/research.md` as research changes the intended architecture.
 - Keep the combined research synthesis aligned with the implementation direction.
@@ -16,7 +16,7 @@ Last updated: 2026-03-24
 - Use synthetic traces or Hugging Face datasets whenever test inputs are needed.
 - Keep the 90% coverage and lint gates green as the tool grows.
 - Keep lifecycle logs and observability artifacts useful and lightweight.
-- Keep `pyproject.toml` and the latest released section in `Chaneglog.md` in sync.
+- Keep `pyproject.toml` and the latest released section in `Changelog.md` in sync.
 - Keep the integration design platform-neutral and centered on one canonical service boundary.
 - Keep onboarding zero-touch by default and manual preparation optional.
 
@@ -55,7 +55,7 @@ Last updated: 2026-03-24
 - Assessed the final user-provided research batch and synced the resulting lessons into the plan.
 - Created `docs/research.md` as the long-form research summary for future reference.
 - Created `docs/PRD.md` and replaced the placeholder README and project metadata with a concrete plain-language project brief.
-- Created `Chaneglog.md` in the repo root and added standing instructions to maintain it.
+- Created `Changelog.md` in the repo root and added standing instructions to maintain it.
 - Implemented a first local discovery prototype with built-in interrupted-task scenarios, local artifacts, resume packets, and improvement logging.
 - Added a registry of Hugging Face benchmark leads for coding, tool-use, long-memory, and grounded document evaluation.
 - Added a JSON intake path for imported interrupted-task traces and example imported trace files.
@@ -65,7 +65,7 @@ Last updated: 2026-03-24
 - Added a Memory Wind Tunnel that removes memory fields and measures the damage.
 - Added a local quality gate and pre-commit hook with 90% coverage plus Python and Markdown linting.
 - Added Python logging and basic observability artifacts for scenario and wind tunnel runs.
-- Added a release-version sync check so future releases use the same version in `pyproject.toml` and `Chaneglog.md`.
+- Added a release-version sync check so future releases use the same version in `pyproject.toml` and `Changelog.md`.
 - Added a documented hybrid integration strategy for HTTP, MCP, multi-agent coordination, and caching.
 - Added a documented onboarding, priming, and learning strategy for the next minor release.
 

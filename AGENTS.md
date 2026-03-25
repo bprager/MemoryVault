@@ -12,7 +12,7 @@
 - Update `.codex/RESEARCH.md` when external research materially changes the design direction.
 - Update `.codex/RESEARCH_INTAKE.md` when new papers, whitepapers, or design references are assessed.
 - Update `docs/research.md` when the durable human-readable research synthesis changes materially.
-- Update `Chaneglog.md` when the project has a notable user-visible, workflow, or architecture change worth recording.
+- Update `Changelog.md` when the project has a notable user-visible, workflow, or architecture change worth recording.
 - Update `.codex/TASKS.md` when priorities, open work, or next steps change.
 - Keep the `.codex` notes concise, factual, and in sync with the actual repository state.
 - Do not silently let `.codex` drift; if code and docs disagree, either fix the docs in the same task or note the mismatch in `.codex/STATUS.md`.

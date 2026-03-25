@@ -21,7 +21,7 @@ Last updated: 2026-03-24
 12. Summaries are never the source of truth for task state; they are derived views over explicit task, plan, and outcome records.
 13. When assessing external research, record a concrete verdict in `RESEARCH_INTAKE.md`: core now, useful later, or reject. Do not let paper enthusiasm override the current first-principles plan.
 14. Keep `../docs/research.md` as the durable human-readable synthesis of the accepted research, while keeping `.codex/RESEARCH.md` concise.
-15. Keep `../Chaneglog.md` current when the repository has a notable user-visible, workflow, or architecture change worth recording.
+15. Keep `../Changelog.md` current when the repository has a notable user-visible, workflow, or architecture change worth recording.
 
 ## What Good Maintenance Looks Like
 
@@ -32,7 +32,7 @@ Last updated: 2026-03-24
 - `CONSTRAINTS.md` lists real boundaries that should shape implementation.
 - `DECISIONS.md` explains why the repo is the way it is.
 - `LESSONS_LEARNED.md` contains practical guidance worth reusing.
-- `Chaneglog.md` records notable project changes in chronological order.
+- `Changelog.md` records notable project changes in chronological order.
 - `docs/PRD.md` states the tool purpose, scope, and success criteria in plain language.
 - `docs/research.md` gives future sessions a readable research summary with source links, short quotes, and project-level lessons.
 

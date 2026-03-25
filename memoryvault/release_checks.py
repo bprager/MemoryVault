@@ -21,7 +21,7 @@ def read_project_version(pyproject_path: str | Path = "pyproject.toml") -> str:
     raise ReleaseConsistencyError(f"project version not found in {path.as_posix()}")
 
 
-def read_latest_release_version(changelog_path: str | Path = "Chaneglog.md") -> str:
+def read_latest_release_version(changelog_path: str | Path = "Changelog.md") -> str:
     path = Path(changelog_path)
     for line in path.read_text(encoding="utf-8").splitlines():
         match = CHANGELOG_RELEASE_PATTERN.match(line.strip())
@@ -32,7 +32,7 @@ def read_latest_release_version(changelog_path: str | Path = "Chaneglog.md") -> 
 
 def ensure_version_sync(
     pyproject_path: str | Path = "pyproject.toml",
-    changelog_path: str | Path = "Chaneglog.md",
+    changelog_path: str | Path = "Changelog.md",
 ) -> str:
     project_version = read_project_version(pyproject_path)
     changelog_version = read_latest_release_version(changelog_path)

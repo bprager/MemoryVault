@@ -100,10 +100,10 @@ Last updated: 2026-03-24
 - Decision: maintain `docs/PRD.md` as the plain-language statement of MemoryVault's purpose, scope, and success criteria.
 - Why: the repository needs one short, durable reference for what the tool is for before implementation details spread further.
 
-### 2026-03-24: Keep a root changelog in `Chaneglog.md`
+### 2026-03-24: Keep a root changelog in `Changelog.md`
 
 - Status: active
-- Decision: maintain a root `Chaneglog.md` file for notable project changes using the Keep a Changelog structure.
+- Decision: maintain a root `Changelog.md` file for notable project changes using the Keep a Changelog structure.
 - Why: the repo now needs one obvious chronological record of meaningful changes outside the more task-oriented `.codex` notes.
 
 ### 2026-03-24: Balance goal coherence with source correspondence
@@ -184,10 +184,10 @@ Last updated: 2026-03-24
 - Decision: add Python `logging` lifecycle messages and per-run JSON observability artifacts before introducing heavier monitoring infrastructure.
 - Why: the tool needs enough observability to compare strategies and debug runs, but it is too early to justify a centralized stack.
 
-### 2026-03-24: Enforce release-version sync against `Chaneglog.md`
+### 2026-03-24: Enforce release-version sync against `Changelog.md`
 
 - Status: active
-- Decision: add a repo-local release check that compares `pyproject.toml` against the latest released version section in `Chaneglog.md`, and run it in the local quality gate.
+- Decision: add a repo-local release check that compares `pyproject.toml` against the latest released version section in `Changelog.md`, and run it in the local quality gate.
 - Why: the `0.3.0` release was made consistent by hand, but that alignment should be enforced so future releases do not drift.
 
 ### 2026-03-24: Use a canonical HTTP service as the main integration contract
