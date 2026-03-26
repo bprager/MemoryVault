@@ -5,8 +5,14 @@ from typing import Iterable
 
 from .models import MemoryCandidate, ResumePacket, RunManifest
 
+DEFAULT_FAILURE_MARKERS = frozenset({"failed", "error", "broke", "wrong"})
 
-def build_resume_packet(manifest: RunManifest, candidates: list[MemoryCandidate]) -> ResumePacket:
+
+def build_resume_packet(
+    manifest: RunManifest,
+    candidates: list[MemoryCandidate],
+    failure_markers: Iterable[str] | None = None,
+) -> ResumePacket:
     by_category = group_by_category(candidates)
 
     current_focus = (
@@ -15,7 +21,7 @@ def build_resume_packet(manifest: RunManifest, candidates: list[MemoryCandidate]
         or ["Resume by re-reading the last attempt and rebuilding the next step from raw history."]
     )
 
-    recent_failures = _collect_recent_failures(by_category)
+    recent_failures = _collect_recent_failures(by_category, failure_markers=failure_markers)
 
     return ResumePacket(
         run_id=manifest.run_id,
@@ -41,17 +47,25 @@ def group_by_category(candidates: list[MemoryCandidate]) -> dict[str, list[Memor
     return grouped
 
 
-def _collect_recent_failures(grouped: dict[str, list[MemoryCandidate]]) -> list[str]:
+def _collect_recent_failures(
+    grouped: dict[str, list[MemoryCandidate]],
+    failure_markers: Iterable[str] | None = None,
+) -> list[str]:
+    markers = {
+        marker.lower()
+        for marker in (DEFAULT_FAILURE_MARKERS if failure_markers is None else failure_markers)
+        if marker.strip()
+    }
     failure_texts: list[str] = []
 
     for candidate in grouped.get("attempt", []):
         lowered = candidate.summary.lower()
-        if "failed" in lowered or "broke" in lowered or "wrong" in lowered:
+        if any(marker in lowered for marker in markers):
             failure_texts.append(candidate.summary)
 
     for candidate in grouped.get("outcome", []):
         lowered = candidate.summary.lower()
-        if "failed" in lowered or "error" in lowered or "broke" in lowered:
+        if any(marker in lowered for marker in markers):
             failure_texts.append(candidate.summary)
 
     return _unique_strings(failure_texts)

@@ -1,6 +1,6 @@
 # Design
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Intended System
 
@@ -28,10 +28,18 @@ The repository now includes a small local discovery harness that:
 - aggregates repeated misses into candidate durable fields,
 - runs a Memory Wind Tunnel that removes fields and measures the damage.
 - emits lifecycle logs and writes local observability artifacts with stage timings and summary counts.
+- generates a workspace profile from representative JSON traces or adapted Hugging Face rows and validates it on held-out traces through an onboarding benchmark gate.
+- assigns a content-based version to each learned workspace profile.
+- records one strategy record and a small set of improvement notes for each onboarding or transfer run.
+- tests whether a learned profile transfers to a different task family through an offline transfer benchmark.
+- summarizes recurring wins and gaps, task-family impact, cost patterns, profile summaries, and workspace lineages from stored strategy runs.
+- runs a benchmark-gated refresh loop that proposes a next profile from prior successful evidence and only keeps it if the current held-out benchmark improves.
 
 This harness is intentionally narrower than the final architecture. Its purpose is to help derive the durable memory model from observed failures before wiring the full graph-backed system.
 
 It should be treated as a tool for memory-strategy learning, not as a finished domain-specific memory product.
+
+For the `1.0` boundary, that tool framing is now explicit: the supported product is a local-first memory-learning workbench, while the shared-service integration remains later work.
 
 ## Primary Design Source
 
@@ -78,6 +86,27 @@ The current preferred onboarding shape is now explicit too:
 - prompt adaptation and candidate type discovery over representative samples
 - cheap provisional graph bootstrapping for the knowledge plane
 - held-out onboarding checks before defaults are trusted
+
+The first implemented onboarding slice currently adapts two learned behaviors:
+
+- expand the failure-marker vocabulary used when collecting `recent_failures`
+- learn non-default event labels such as `Focus`, `Evidence`, and `Guardrail`
+
+It now adds a third behavior too:
+
+- learn cue phrases from free-form notes so unlabeled text can still recover current focus, decisions, lessons, open questions, sources, constraints, and blockers
+
+The first implemented strategy-learning slice currently adds:
+
+- content-based profile versioning
+- per-run strategy records with quality and timing metadata
+- per-run improvement notes
+- an offline transfer benchmark over saved task-family fixtures
+- a cross-run summary layer for category-level wins and gaps, cost patterns, profile history, and cue-transfer evidence
+- cue-only measurements so the tracker can isolate how much of a gain came from cue phrases
+- a refresh loop that reuses prior successful aliases, failure markers, cue phrases, source priorities, and starter-pack hints when the held-out benchmark confirms the next profile is better
+
+That still-narrow adaptation is deliberate. It provides measurable onboarding wins on held-out traces, including public-data-shaped inputs, while keeping the implementation honest about how much of the broader onboarding plan is still future work.
 
 ## Goal-Conditioned Retrieval
 

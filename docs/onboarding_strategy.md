@@ -1,6 +1,6 @@
 # MemoryVault onboarding, priming, and learning strategy
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Decision summary
 
@@ -20,6 +20,128 @@ The most important point is this:
 - a hand-built ontology must be optional
 - a starter pack must be a hint layer, not the source of truth
 - semi-automatic graph creation is useful, but only as one input into onboarding
+
+## Current implemented slice
+
+The repository now has the first thin onboarding implementation.
+
+Today it can:
+
+- load a directory of interrupted-task JSON traces
+- pick a representative sample automatically
+- learn a first workspace profile from that sample
+- generate an optional YAML starter pack
+- hold out the remaining traces for validation
+- rerun those held-out traces with the learned profile
+- pass or fail an onboarding gate based on the score delta
+- adapt saved Hugging Face dataset rows into the same onboarding gate
+- assign a stable profile version based on the learned profile contents
+- record strategy runs with score, timing, and task-family metadata
+- write short improvement notes after each onboarding, transfer, or refresh run
+- test whether a learned profile transfers to a different task family
+- summarize recurring wins and gaps, task-family impact, cost patterns, and profile history across runs
+- run an explicit refresh loop that builds a candidate next profile from prior successful evidence and only keeps it if the held-out benchmark improves
+- carry forward richer evidence such as learned content cues for free-form notes, not only label aliases and failure markers
+- measure the cue-only contribution separately so the tracker can tell which cue categories actually transferred
+
+The current learned adaptation is intentionally narrow but no longer single-purpose:
+
+- it expands the failure-marker vocabulary used for `recent_failures`
+- it learns extra event-label aliases such as `Focus`, `Evidence`, and `Guardrail`
+- it learns free-form cue phrases such as `before anything else`, `so we will`, `this means`, `still unclear whether`, `according to`, `stay within`, and `waiting on` so unlabeled notes can still recover current focus, decisions, lessons, open questions, sources, constraints, and blockers
+
+That is enough to prove the onboarding loop can learn from sample data and improve held-out performance without pretending the broader onboarding plan is already finished.
+
+```plantuml
+@startuml
+title Strategy Tracker Rollups
+
+rectangle "Onboarding run" as Onboarding
+rectangle "Transfer run" as Transfer
+database "strategy_tracker.jsonl" as Tracker
+rectangle "Category rollups" as Categories
+rectangle "Task-family rollups" as Families
+rectangle "Cost rollups" as Cost
+rectangle "Profile history" as Profiles
+rectangle "Workspace lineage" as Lineage
+
+Onboarding --> Tracker
+Transfer --> Tracker
+Tracker --> Categories
+Tracker --> Families
+Tracker --> Cost
+Tracker --> Profiles
+Tracker --> Lineage
+@enduml
+```
+
+```plantuml
+@startuml
+title Tracker-Driven Refresh Loop
+
+rectangle "Current workspace profile" as Current
+database "Strategy rollups" as Rollups
+rectangle "Refresh plan" as Plan
+rectangle "Aliases + failure markers\n+ cue phrases" as EvidenceBundle
+rectangle "Candidate next profile" as Candidate
+rectangle "Held-out benchmark" as Benchmark
+rectangle "Accepted profile" as Accepted
+rectangle "Rejected candidate" as Rejected
+
+Current --> Plan
+Rollups --> Plan
+Plan --> EvidenceBundle
+EvidenceBundle --> Candidate
+Candidate --> Benchmark
+Benchmark --> Accepted : improves
+Benchmark --> Rejected : no gain
+@enduml
+```
+
+```plantuml
+@startuml
+title Cue Transfer Measurement
+
+rectangle "Baseline" as Baseline
+rectangle "Profile without cue phrases" as NoCue
+rectangle "Full profile with cue phrases" as WithCue
+rectangle "Cue-only delta" as CueDelta
+database "Strategy tracker" as Tracker
+rectangle "Cross-family cue summary" as Summary
+
+Baseline --> NoCue
+NoCue --> WithCue
+WithCue --> CueDelta
+CueDelta --> Tracker
+Tracker --> Summary
+@enduml
+```
+
+```plantuml
+@startuml
+title First Implemented Onboarding Slice
+
+rectangle "Representative sample traces" as Sample
+rectangle "Public dataset row adapters" as Adapters
+rectangle "Workspace profile" as Profile
+rectangle "Generated starter pack" as Starter
+rectangle "Held-out traces" as Holdout
+rectangle "Profile-aware resume scoring" as Scoring
+rectangle "Benchmark gate" as Gate
+rectangle "Strategy tracker" as Tracker
+rectangle "Transfer benchmark" as Transfer
+
+Sample --> Profile
+Adapters --> Sample
+Profile --> Starter
+Profile --> Scoring
+Holdout --> Scoring
+Scoring --> Gate
+Gate --> Tracker
+Profile --> Transfer
+Transfer --> Tracker
+@enduml
+```
 
 ## Why this is the right next release
 
@@ -207,6 +329,52 @@ Once the tool is in use, it should keep learning from:
 
 The onboarding result is therefore not a one-time setup. It becomes a refreshable workspace profile.
 
+The first implemented version of that refresh idea is now explicit:
+
+- previous successful strategy runs are filtered by workspace and task-family overlap
+- their rollups choose which aliases, failure markers, cue phrases, source priorities, and starter-pack fields are worth carrying forward
+- a candidate refreshed profile is built from that evidence
+- the candidate is benchmarked on the current held-out traces
+- the candidate is only kept when the benchmark actually improves
+
+## Current strategy-learning addition
+
+The onboarding loop now has one more implemented layer beyond the original held-out gate:
+
+- every learned profile gets a content-based version
+- every onboarding or transfer run writes a strategy record
+- every run also writes short timestamped improvement notes
+- a transfer benchmark can learn on one task family and score on another
+- cue-disabled comparisons now show how much of a gain came from cue phrases specifically
+- the tracker can now roll those results up by cue category and task family
+
+This does not yet mean MemoryVault has a full strategy archive or profile-evolution engine. It means the tool can now begin to answer a harder and more useful question:
+
+- did this learned profile only help the data it came from, or does it help elsewhere too?
+
+```plantuml
+@startuml
+title Current Strategy-Tracking Slice
+
+rectangle "Source task family" as Source
+rectangle "Learned workspace profile" as Profile
+rectangle "Source hold-out gate" as Gate
+rectangle "Target task family" as Target
+rectangle "Transfer benchmark" as Transfer
+database "Strategy tracker" as Tracker
+database "Improvement notes" as Notes
+
+Source --> Profile
+Profile --> Gate
+Profile --> Transfer
+Target --> Transfer
+Gate --> Tracker
+Transfer --> Tracker
+Gate --> Notes
+Transfer --> Notes
+@enduml
+```
+
 ## Proposed starter pack YAML
 
 The starter pack should exist, but only as an optional soft hint file.
@@ -252,6 +420,16 @@ memory:
     - recent_failures
     - open_questions
     - decision_rationale
+  failure_markers:
+    - weak
+    - unavailable
+  prefix_aliases:
+    current_focus:
+      - focus
+    source:
+      - evidence
+    constraint:
+      - guardrail
 retrieval:
   prefer_goal_conditioning: true
   require_source_grounding: true

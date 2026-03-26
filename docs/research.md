@@ -1,6 +1,6 @@
 # Research Summary
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Purpose
 
@@ -25,6 +25,8 @@ The current design assumption is that the tool begins without private production
 - Monolithic whole-context rewriting is risky because it can collapse rich context into shallow summaries.
 - Graph structure is valuable, but phase 1 should use it first for control state, provenance, and relationships, not for maximal knowledge-graph sophistication.
 - Evaluation should optimize both usefulness and cost: task success, plan continuity, failure avoidance, token cost, latency, and extra steps.
+- Performance tracking and timestamped improvement insights are part of the memory-learning loop, not just observability exhaust.
+- A useful memory policy should be tested for transfer across task families; improvements that only help one benchmark are weaker than reusable ones.
 
 ## Quotes That Most Changed The Design
 
@@ -44,6 +46,8 @@ The current design assumption is that the tool begins without private production
   - Lesson: lineage, access control, and traceability belong in the design from the start.
 - [Toward Efficient Agents](https://arxiv.org/abs/2601.14192): "Pareto frontier between effectiveness and cost."
   - Lesson: memory must be judged as a quality-versus-cost trade-off, not only by retrieval quality.
+- [HyperAgents](https://arxiv.org/abs/2603.19461): persistent memory and performance tracking emerged as transferable self-improvement mechanisms.
+  - Lesson: track strategy performance over time and test whether learned memory behavior transfers across task families.
 
 ## Source Assessments
 
@@ -129,6 +133,11 @@ The current design assumption is that the tool begins without private production
   - Why it matters: local scores can hide worse long-run behavior.
   - Carry later: evaluate MemoryVault by downstream task continuity and long-run task completion, not only local memory scores.
 
+- [HyperAgents](https://arxiv.org/abs/2603.19461)
+  - Why it matters: it is one of the clearest recent examples showing that persistent memory and performance tracking can become reusable improvement machinery instead of one-off task hacks.
+  - Carry now: add strategy-performance tracking and timestamped improvement insights to the learning loop; test transfer of learned workspace profiles across task families.
+  - Caution: this is not a direct blueprint for MemoryVault's storage, retrieval, caching, or multi-agent design, and it should not push the project toward self-modifying agents as the next milestone.
+
 - [MemoryBank: Enhancing Large Language Models with Long-Term Memory](https://arxiv.org/abs/2305.10250)
   - Why it matters: long-term memory and selective forgetting can help sustained interaction.
   - Carry later: selective forgetting may fit low-value episodic detail, but it should not touch active goals, plans, constraints, or failures.
@@ -145,6 +154,33 @@ The current design assumption is that the tool begins without private production
 - Graph structure should first serve control-state retrieval, provenance, and evidence linkage before more ambitious knowledge modeling.
 - Benchmarking should include plan adherence, failure avoidance, task completion, token cost, latency, and extra tool or retrieval steps.
 - Until real traces exist, benchmark input should come from synthetic traces and public Hugging Face datasets that can be converted into interrupted-task evaluations.
+- The learning loop should also track profile versions, measured quality and cost over time, and whether improvements transfer across task families.
+
+## Additional Research-Driven Direction
+
+The `HyperAgents` paper is relevant, but only in a bounded way. It does not tell MemoryVault how to store or retrieve memory. What it does show is that two capabilities keep reappearing when systems get better at improving themselves:
+
+- persistent memory that preserves synthesized lessons across runs
+- performance tracking that helps later changes respond to evidence instead of guesswork
+
+That is directly useful for MemoryVault's next stage because the project is already trying to learn which memory behavior helps. The practical addition is a closed loop that compares memory-profile variants, stores short timestamped improvement notes, and checks whether a profile that helped one task family also helps another.
+
+```plantuml
+@startuml
+left to right direction
+rectangle "Task Family A" as A
+rectangle "Task Family B" as B
+rectangle "Workspace Profile /\nMemory Policy" as M
+rectangle "Performance Tracker" as P
+rectangle "Improvement Insights" as I
+
+M --> A : apply
+A --> P : outcomes + cost
+P --> I : summarize
+I --> M : refine
+M --> B : test transfer
+@enduml
+```
 
 ## Official integration standards reviewed
 
@@ -186,9 +222,11 @@ The best current onboarding pattern appears to be:
 
 That is why the new onboarding design in `docs/onboarding_strategy.md` favors generated starter packs over mandatory hand-authored ontologies.
 
+One practical addition from Hugging Face's dataset-viewer documentation is also now useful: the `first-rows` response gives a stable JSON shape for public dataset samples. That makes it possible to build MemoryVault adapters around real public row formats while still keeping tests local and offline through saved row snapshots.
+
 ## Current Bottom Line
 
-The research does not support starting with compression. It supports starting with reliable control-state memory, goal-aware retrieval, explicit state tracking, source-grounded durable memory, and carefully curated procedural playbooks. Compression and richer graph reasoning remain important, but only after the system can already remember what it is trying to do, what has happened so far, and what should happen next.
+The research still does not support starting with compression. It supports starting with reliable control-state memory, goal-aware retrieval, explicit state tracking, source-grounded durable memory, and carefully curated procedural playbooks. The new `HyperAgents` paper does not change that priority order. What it adds is a stronger reason to treat performance tracking and transfer evaluation as part of the memory-learning loop, so MemoryVault can tell whether a learned profile is becoming generally useful instead of merely overfitting one task family.
 
 ## Public Benchmark Leads
 
@@ -202,3 +240,9 @@ These public Hugging Face datasets look like strong fits for MemoryVault's evalu
 - [allenai/qasper](https://huggingface.co/datasets/allenai/qasper): source-grounded long-document tasks with evidence.
 - [bigbio/multi_xscience](https://huggingface.co/datasets/bigbio/multi_xscience): multi-document synthesis with source relationships.
 - [hotpotqa/hotpot_qa](https://huggingface.co/datasets/hotpotqa/hotpot_qa): multi-hop evidence retrieval with supporting facts.
+
+For implementation, the most practical adapter path is:
+
+- use the dataset viewer's `first-rows` response shape as the canonical public-row format
+- keep small saved row snapshots in the repo for deterministic tests
+- optionally fetch the same row shape live when network access is available

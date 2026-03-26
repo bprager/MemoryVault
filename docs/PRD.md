@@ -1,6 +1,6 @@
 # MemoryVault tool requirements
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Summary
 
@@ -19,6 +19,16 @@ The tool should preserve the parts that agents tend to lose first:
 - links back to the code, documents, notes, and raw history those records came from
 
 MemoryVault is not being built as a domain-specific assistant. It is being built as a memory-learning tool that begins with minimal domain assumptions and improves from evidence.
+
+The release path from the current prototype line to a truthful `1.0.0` is captured in [docs/release_plan.md](release_plan.md).
+
+## `1.0` product identity
+
+`MemoryVault 1.0` is a local-first memory-learning workbench.
+
+It is for learning which memory structures and retrieval strategies help long-running work resume cleanly across task families.
+
+It is not, in `1.0`, a shared production memory service, a finalized HTTP or MCP product surface, or a live production-trace platform.
 
 ## Problem
 
@@ -133,6 +143,17 @@ The tool should be able to compare:
 
 The point is to learn which memory strategy helps across tasks, not only to produce one static architecture.
 
+The current implemented comparison slice now also includes:
+
+- versioned workspace profiles
+- recorded strategy runs with score, timing, and task-family metadata
+- short improvement notes that capture what helped, what regressed, and what to try next
+- a transfer benchmark that checks whether a learned profile helps on a different task family
+- a cross-run summary that shows recurring wins and gaps, task-family impact, cost patterns, profile history, and cue-transfer evidence
+- cue-only measurements so the tracker can separate the effect of cue phrases from the rest of the learned profile
+- a refresh loop that turns prior successful evidence into a candidate next profile and only keeps it if the held-out benchmark improves
+- a fixed offline release benchmark bundle over saved public-data fixtures so each release can be compared against the same baseline, cue-disabled, and adapted scores
+
 ```plantuml
 @startuml
 title Memory Strategy Evaluation
@@ -140,14 +161,17 @@ title Memory Strategy Evaluation
 actor Developer
 rectangle "Interrupted task" as Task
 rectangle "Baseline memory" as Baseline
-rectangle "Ablated or alternate memory" as Variant
+rectangle "Profile without cues" as NoCue
+rectangle "Full learned profile" as Variant
 rectangle "Evaluator" as Evaluator
 database "Evidence store" as Evidence
 
 Developer --> Task
 Task --> Baseline
+Task --> NoCue
 Task --> Variant
 Baseline --> Evaluator
+NoCue --> Evaluator
 Variant --> Evaluator
 Evaluator --> Evidence
 @enduml
@@ -205,6 +229,36 @@ The current preferred onboarding model is:
 - cheap provisional graph bootstrapping for the knowledge plane
 - held-out onboarding checks before promoted defaults are trusted
 
+The first implemented onboarding slice now also includes:
+
+- learned event-label aliases for common non-default task markers such as `Focus`, `Evidence`, and `Guardrail`
+- learned cue phrases for free-form notes so current focus, decisions, lessons, open questions, source grounding, and control state can survive even when the trace does not use explicit labels
+- adapters that turn saved Hugging Face dataset rows into onboarding scenarios
+  The current adapter set covers TaskBench, SWE-bench Verified, QASPER, and conversation-bench style rows.
+- strategy records and transfer checks so onboarding improvements can be tested for reuse instead of only for same-family gains
+- cue-only measurements so the tracker can separate the effect of cue phrases from the rest of the learned profile
+- a benchmark-gated refresh step so prior successful profiles can shape the next workspace profile without becoming automatic truth
+
+## Current release benchmark contract
+
+The current `0.5.x` release benchmark contract is intentionally small and repeatable:
+
+- run `python3 -m memoryvault release-benchmark`
+- execute the fixed offline public bundle built from the saved TaskBench, SWE-bench Verified, QASPER, and conversation-bench row fixtures
+- include one fixed transfer check from TaskBench to conversation-bench style rows
+- write one `release_benchmark_report.json` artifact with stable case ids, bundle version, project version, and per-case baseline, cue-disabled, and adapted scores
+
+This is the first release benchmark contract, not the final `1.0.0` gate.
+
+## Current artifact compatibility rule
+
+The current compatibility promise is also intentionally narrow:
+
+- `workspace_profile.json` carries both a content-based `profile_version` and an `artifact_schema_version`
+- `onboarding_benchmark.json`, `transfer_benchmark.json`, and `release_benchmark_report.json` carry an `artifact_schema_version`
+- additive fields are allowed within the current schema version
+- removing fields, renaming fields, or changing meaning requires a new schema version and a documented migration or explicit break notice before a stable release
+
 ## What the tool should not do in v1
 
 - It should not try to solve every memory problem at once.
@@ -234,6 +288,7 @@ That means:
 - repeated misses can be aggregated into candidate durable fields
 - the Memory Wind Tunnel can remove fields and show which ones actually damage resumed work
 - the same loop can run on synthetic traces and public Hugging Face datasets
+- a zero-touch onboarding flow can derive a first workspace profile, generate an optional starter pack, and test it on held-out traces
 - the design stays safely isolated inside the shared Memgraph instance on `odin:7697`
 
 If phase 1 cannot do those things, later compression work is premature.
@@ -258,6 +313,8 @@ Today the project already has:
 
 - a detailed design note
 - a research summary
+- a zero-touch onboarding prototype over bundled interrupted-task traces
+- a first set of Hugging Face row adapters for TaskBench, SWE-bench Verified, QASPER, and conversation-bench style inputs
 - a strategy note for zero-domain-knowledge development
 - a reviewed architecture direction
 - a verified Memgraph target
@@ -276,11 +333,11 @@ Today the project does not yet have:
 - a working Memgraph integration in the codebase
 - a benchmark harness
 - live production traces
-- Hugging Face dataset adapters wired into the codebase
+- live Hugging Face downloads wired into automated tests
 - broad strategy comparison across multiple public task families
 - centralized dashboards or external tracing infrastructure
 - the planned HTTP core service, MCP adapter, event plane, or shared-cache layer
-- the planned onboarding flow, generated starter pack, benchmark gate, or refresh loop
+- the prompt-adaptation and provisional graph-bootstrapping parts of the planned onboarding flow
 
 ## Open tool questions
 

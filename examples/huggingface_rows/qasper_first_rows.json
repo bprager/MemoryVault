@@ -1,0 +1,115 @@
+{
+  "dataset": "allenai/qasper",
+  "config": "qasper",
+  "split": "train",
+  "rows": [
+    {
+      "row_idx": 0,
+      "row": {
+        "id": "qa_001",
+        "title": "Goal-Aware Retrieval for Long-Running Agents",
+        "abstract": [
+          "The paper studies how explicit goal reminders affect retrieval quality in long sessions.",
+          "It also measures whether cited evidence reduces hallucinated continuity."
+        ],
+        "qas": {
+          "question": [
+            "Why does the paper argue that cited evidence should appear before final conclusions?"
+          ],
+          "answers": [
+            {
+              "answer": [
+                {
+                  "evidence": [
+                    "The authors report that unsupported conclusions caused repeated factual drift, while cited evidence kept later decisions grounded."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "row_idx": 1,
+      "row": {
+        "id": "qa_002",
+        "title": "Structured Memory Maintenance for Tool Agents",
+        "abstract": [
+          "The paper compares append-only memory with explicit update operations.",
+          "It finds that invalidation improves long-run task continuity."
+        ],
+        "qas": {
+          "question": [
+            "What benefit did explicit invalidation have in the reported experiments?"
+          ],
+          "answers": [
+            {
+              "answer": [
+                {
+                  "evidence": [
+                    "Invalidation prevented stale guidance from reappearing after the environment changed, which reduced repeated errors."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "row_idx": 2,
+      "row": {
+        "id": "qa_003",
+        "title": "Graph Summaries for Evidence Recall",
+        "abstract": [
+          "The paper explores lightweight graph summaries over source documents.",
+          "It emphasizes that summary nodes must still point back to raw source passages."
+        ],
+        "qas": {
+          "question": [
+            "How did the paper keep graph summaries from drifting away from the original sources?"
+          ],
+          "answers": [
+            {
+              "answer": [
+                {
+                  "evidence": [
+                    "Each summary node stored links to the exact passages that supported it, making re-checking possible during later retrieval."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "row_idx": 3,
+      "row": {
+        "id": "qa_004",
+        "title": "Prompt Assembly Under Long Context Limits",
+        "abstract": [
+          "The paper studies prompt assembly under tight token budgets.",
+          "It concludes that current-state headers should be assembled before broader context."
+        ],
+        "qas": {
+          "question": [
+            "What ordering rule did the paper recommend for prompt assembly under tight budgets?"
+          ],
+          "answers": [
+            {
+              "answer": [
+                {
+                  "evidence": [
+                    "The experiments favored building a current-state header first and then adding broader context only after the task state was explicit."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

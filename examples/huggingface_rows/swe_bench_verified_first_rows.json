@@ -1,0 +1,71 @@
+{
+  "dataset": "princeton-nlp/SWE-bench_Verified",
+  "config": "default",
+  "split": "test",
+  "rows": [
+    {
+      "row_idx": 0,
+      "row": {
+        "instance_id": "django__django-1001",
+        "repo": "django/django",
+        "base_commit": "abc1234",
+        "problem_statement": "Fix the migration planner so renamed constraints do not trigger duplicate operations.",
+        "hints_text": "The problem appears after comparing old and new constraint names inside the planner.",
+        "FAIL_TO_PASS": [
+          "tests/migrations/test_planner.py::test_renamed_constraint"
+        ],
+        "PASS_TO_PASS": [
+          "tests/migrations/test_planner.py::test_existing_constraint_plan"
+        ]
+      }
+    },
+    {
+      "row_idx": 1,
+      "row": {
+        "instance_id": "sympy__sympy-2102",
+        "repo": "sympy/sympy",
+        "base_commit": "def5678",
+        "problem_statement": "Prevent simplify from dropping assumptions on chained symbolic substitutions.",
+        "hints_text": "Look at the substitution rewrite path before the final simplify pass.",
+        "FAIL_TO_PASS": [
+          "sympy/simplify/tests/test_assumptions.py::test_chained_substitution"
+        ],
+        "PASS_TO_PASS": [
+          "sympy/simplify/tests/test_simplify.py::test_basic_symbols"
+        ]
+      }
+    },
+    {
+      "row_idx": 2,
+      "row": {
+        "instance_id": "pytest__pytest-3303",
+        "repo": "pytest-dev/pytest",
+        "base_commit": "ghi9012",
+        "problem_statement": "Keep xfail reporting stable when a parametrized case raises a collection error.",
+        "hints_text": "The reporting hook gets the wrong outcome after collection short-circuits.",
+        "FAIL_TO_PASS": [
+          "testing/test_reports.py::test_xfail_collection_error"
+        ],
+        "PASS_TO_PASS": [
+          "testing/test_reports.py::test_xfail_expected_failure"
+        ]
+      }
+    },
+    {
+      "row_idx": 3,
+      "row": {
+        "instance_id": "pandas__pandas-4404",
+        "repo": "pandas-dev/pandas",
+        "base_commit": "jkl3456",
+        "problem_statement": "Preserve timezone-aware dtype when concatenating a non-empty series with an empty matching series.",
+        "hints_text": "The concat path widens the dtype too early when one side is empty.",
+        "FAIL_TO_PASS": [
+          "pandas/tests/reshape/concat/test_series.py::test_concat_empty_tzaware"
+        ],
+        "PASS_TO_PASS": [
+          "pandas/tests/reshape/concat/test_series.py::test_concat_empty_numeric"
+        ]
+      }
+    }
+  ]
+}

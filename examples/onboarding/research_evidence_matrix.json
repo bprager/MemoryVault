@@ -1,0 +1,95 @@
+{
+  "scenario_id": "research_evidence_matrix",
+  "title": "Resume a source-grounded comparison after a weak draft",
+  "domain": "research",
+  "goal": "Compare two memory strategies and keep every claim tied to a source.",
+  "interruption_point": "The run stopped after a weak draft and a better structure plan.",
+  "events": [
+    {
+      "actor": "user",
+      "text": "Goal: Compare two memory strategies and keep every claim tied to a source."
+    },
+    {
+      "actor": "assistant",
+      "text": "Plan: Read both notes, pull their strongest claims, organize them into an evidence matrix, and only then write the recommendation."
+    },
+    {
+      "actor": "assistant",
+      "text": "Constraint: Do not write the final recommendation without explicit supporting evidence."
+    },
+    {
+      "actor": "assistant",
+      "text": "Source: docs/memory_strategy_a.md says a goal reminder should appear before broader retrieval.",
+      "source_refs": [
+        "docs/memory_strategy_a.md"
+      ]
+    },
+    {
+      "actor": "assistant",
+      "text": "Attempt: Drafted the recommendation from memory before building the matrix. The draft was weak."
+    },
+    {
+      "actor": "assistant",
+      "text": "Lesson: The comparison will stay weak unless each claim points to a source row in the matrix."
+    },
+    {
+      "actor": "assistant",
+      "text": "Decision: Build the evidence matrix first and defer the recommendation."
+    },
+    {
+      "actor": "assistant",
+      "text": "Next step: Add a row for each claim, source, and open question before writing prose."
+    }
+  ],
+  "expected_items": [
+    {
+      "name": "goal_guard",
+      "category": "goal",
+      "keywords": [
+        "claim tied to a source"
+      ]
+    },
+    {
+      "name": "protect_evidence_boundary",
+      "category": "constraint",
+      "keywords": [
+        "explicit supporting evidence"
+      ]
+    },
+    {
+      "name": "remember_weak_draft",
+      "category": "recent_failures",
+      "keywords": [
+        "draft was weak"
+      ]
+    },
+    {
+      "name": "keep_matrix_lesson",
+      "category": "lesson",
+      "keywords": [
+        "source row"
+      ]
+    },
+    {
+      "name": "keep_structure_decision",
+      "category": "decision",
+      "keywords": [
+        "evidence matrix first"
+      ]
+    },
+    {
+      "name": "remember_next_step",
+      "category": "current_focus",
+      "keywords": [
+        "open question"
+      ]
+    },
+    {
+      "name": "keep_source_link",
+      "category": "source",
+      "keywords": [
+        "docs/memory_strategy_a.md"
+      ]
+    }
+  ]
+}

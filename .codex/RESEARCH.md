@@ -1,6 +1,6 @@
 # Research
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Primary Sources Reviewed
 
@@ -115,6 +115,13 @@ Last updated: 2026-03-24
 - URL: `https://arxiv.org/abs/2510.21614`
 - Key takeaway: immediate local scores can be a poor proxy for long-run usefulness.
 - Implication for MemoryVault: evaluate memory by downstream task continuity and eventual success, not just local retrieval metrics.
+
+### HyperAgents
+
+- Source: `HyperAgents`
+- URL: `https://arxiv.org/abs/2603.19461`
+- Key takeaway: persistent memory and performance tracking emerged as transferable self-improvement mechanisms across several task families, but the paper is mainly about self-referential agent improvement rather than memory architecture.
+- Implication for MemoryVault: keep performance tracking and synthesized improvement insights as first-class inputs to memory-policy learning, and test whether learned profiles transfer across task families instead of only improving one benchmark.
 
 ### Memory and the self
 
@@ -235,6 +242,13 @@ Last updated: 2026-03-24
 - Key takeaway: document-level relation extraction requires cross-sentence synthesis and is a useful stress test for relation discovery.
 - Implication for MemoryVault: use it to evaluate whether onboarding-time relation hints and provisional graphs are useful or too noisy.
 
+### Hugging Face Dataset Viewer First Rows
+
+- Source: `Hugging Face dataset viewer first-rows guide`
+- URL: `https://huggingface.co/docs/dataset-viewer/en/first_rows`
+- Key takeaway: the dataset viewer exposes a stable JSON response with dataset features and example rows, which is enough to inspect public dataset shape before full ingestion.
+- Implication for MemoryVault: public-data adapters can target saved `first-rows` style payloads for offline tests and later use the same response shape for live fetches.
+
 ## Working Conclusions
 
 1. The strongest memory systems do more than retrieve text. They preserve agent state across attempts.
@@ -258,6 +272,7 @@ Last updated: 2026-03-24
 19. A tool-first memory project should begin with synthetic traces and public datasets if private production traces do not yet exist.
 20. Early benchmark coverage should span several task families so the tool does not mistake one domain's memory needs for a general rule.
 21. The best integration model is a hybrid: canonical HTTP service, MCP agent adapter, and async event plane.
+22. Public-data adapters should follow the real Hugging Face row shape so offline fixtures and optional live fetches use one compatible format.
 22. Multi-agent memory systems need explicit tenancy, concurrency, and cache-coherence design.
 23. Zero-touch onboarding should be the default, with manual structure treated as optional hints.
 24. Fast graph bootstrapping is useful for onboarding speed, but only as provisional knowledge-plane support.

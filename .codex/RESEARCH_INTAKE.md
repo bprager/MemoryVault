@@ -1,6 +1,6 @@
 # Research Intake
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Batch 1: User-Provided Documents
 
@@ -239,6 +239,31 @@ Last updated: 2026-03-24
   - define asynchronous update and invalidation events in a CloudEvents-style contract
   - keep the event contract broker-neutral
 
+## Batch 5: Public Dataset Access And Shapes
+
+### 1. Hugging Face Dataset Viewer First Rows
+
+- Source: `https://huggingface.co/docs/dataset-viewer/en/first_rows`
+- Verdict: accept, useful now
+- Why it matters: it documents a stable JSON shape for dataset features and example rows.
+- Adopt now:
+  - use `first-rows` style payloads as the canonical adapter input shape
+  - keep saved row snapshots in the repo for offline tests
+  - optionally fetch the same payload shape live when network access is available
+
+### 2. Hugging Face Dataset Cards: TaskBench, SWE-bench Verified, QASPER, ConversationBench
+
+- Sources:
+  - `https://huggingface.co/datasets/microsoft/Taskbench`
+  - `https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified`
+  - `https://huggingface.co/datasets/allenai/qasper`
+  - `https://huggingface.co/datasets/arcada-labs/conversation-bench`
+- Verdict: accept, useful now
+- Why it matters: they expose the real public row fields that MemoryVault needs to turn into interrupted-task onboarding scenarios.
+- Adopt now:
+  - start with adapters for TaskBench, SWE-bench Verified, and QASPER-style rows
+  - keep conversation-style datasets as the next likely expansion path
+
 ### 5. NATS JetStream and Key-Value Store
 
 - Sources:
@@ -339,4 +364,26 @@ Last updated: 2026-03-24
 ## Batch 5 Summary
 
 - Useful now: `GraphRAG auto prompt tuning`, `GraphRAG prompt tuning overview`, `GraphRAG methods`, `GraphRAG bring your own graph`, `Few-NERD`, `DocRED`
+- Rejected as irrelevant: none
+
+## Batch 6: User-Provided Paper Review
+
+### 1. HyperAgents
+
+- File: `/Users/bernd/Downloads/2603.19461v1.pdf`
+- Verdict: accept, useful later and indirectly useful now
+- Why it matters: this is not a memory-system design paper, but it does show that persistent memory and performance tracking emerged as reusable self-improvement mechanisms and transferred across task families instead of helping only one benchmark.
+- Adopt now:
+  - treat performance tracking as part of the memory-learning loop rather than as separate reporting only
+  - evaluate whether learned workspace profiles or memory policies transfer across task families
+  - keep synthesized improvement insights, not just raw scores, as first-class artifacts in future strategy-learning work
+- Adopt later:
+  - consider an archive of memory-policy or workspace-profile variants once the current baseline is stable enough to compare them meaningfully
+- Do not over-apply:
+  - do not pivot MemoryVault into a self-modifying or open-ended evolutionary agent project
+  - do not treat this paper as guidance for durable schema design, retrieval design, caching, or multi-agent infrastructure
+
+## Batch 6 Summary
+
+- Useful now in a bounded way: `HyperAgents`
 - Rejected as irrelevant: none

@@ -1,0 +1,139 @@
+{
+  "dataset": "microsoft/Taskbench",
+  "config": "dailylifeapis",
+  "split": "test",
+  "rows": [
+    {
+      "row_idx": 0,
+      "row": {
+        "id": "tb_001",
+        "instruction": "Book a meeting room and send the final team note after the room is reserved.",
+        "tool_steps": [
+          "Step 1: Search available rooms for Friday at 2 PM.",
+          "Step 2: Reserve the selected room.",
+          "Step 3: Draft the team note with the reservation id."
+        ],
+        "tool_nodes": [
+          {
+            "task": "search_rooms"
+          },
+          {
+            "task": "reserve_room"
+          },
+          {
+            "task": "notify_team"
+          }
+        ],
+        "tool_links": [
+          {
+            "source": "search_rooms",
+            "target": "reserve_room"
+          },
+          {
+            "source": "reserve_room",
+            "target": "notify_team"
+          }
+        ]
+      }
+    },
+    {
+      "row_idx": 1,
+      "row": {
+        "id": "tb_002",
+        "instruction": "Fetch the import file, run validation, and send the completion note only after validation passes.",
+        "tool_steps": [
+          "Step 1: Fetch the import file handle.",
+          "Step 2: Run the validator.",
+          "Step 3: Start the import and send the completion note."
+        ],
+        "tool_nodes": [
+          {
+            "task": "fetch_file"
+          },
+          {
+            "task": "run_validator"
+          },
+          {
+            "task": "send_completion_note"
+          }
+        ],
+        "tool_links": [
+          {
+            "source": "fetch_file",
+            "target": "run_validator"
+          },
+          {
+            "source": "run_validator",
+            "target": "send_completion_note"
+          }
+        ]
+      }
+    },
+    {
+      "row_idx": 2,
+      "row": {
+        "id": "tb_003",
+        "instruction": "Collect the source spreadsheet, normalize the data, and publish the dashboard only after normalization finishes.",
+        "tool_steps": [
+          "Step 1: Download the spreadsheet.",
+          "Step 2: Normalize the imported columns.",
+          "Step 3: Publish the dashboard update."
+        ],
+        "tool_nodes": [
+          {
+            "task": "download_sheet"
+          },
+          {
+            "task": "normalize_data"
+          },
+          {
+            "task": "publish_dashboard"
+          }
+        ],
+        "tool_links": [
+          {
+            "source": "download_sheet",
+            "target": "normalize_data"
+          },
+          {
+            "source": "normalize_data",
+            "target": "publish_dashboard"
+          }
+        ]
+      }
+    },
+    {
+      "row_idx": 3,
+      "row": {
+        "id": "tb_004",
+        "instruction": "Check the available shuttle options and confirm the itinerary only after the final pickup is selected.",
+        "tool_steps": [
+          "Step 1: Check the shuttle options.",
+          "Step 2: Pick the final shuttle.",
+          "Step 3: Confirm the itinerary."
+        ],
+        "tool_nodes": [
+          {
+            "task": "list_shuttles"
+          },
+          {
+            "task": "select_shuttle"
+          },
+          {
+            "task": "confirm_itinerary"
+          }
+        ],
+        "tool_links": [
+          {
+            "source": "list_shuttles",
+            "target": "select_shuttle"
+          },
+          {
+            "source": "select_shuttle",
+            "target": "confirm_itinerary"
+          }
+        ]
+      }
+    }
+  ]
+}

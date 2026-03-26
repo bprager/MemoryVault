@@ -39,3 +39,9 @@ def load_scenario_file(path: str | Path) -> Scenario:
         events=events,
         expected_items=expected_items,
     )
+
+
+def load_scenarios_from_directory(path: str | Path) -> list[Scenario]:
+    source_dir = Path(path)
+    files = sorted(candidate for candidate in source_dir.rglob("*.json") if candidate.is_file())
+    return [load_scenario_file(candidate) for candidate in files]

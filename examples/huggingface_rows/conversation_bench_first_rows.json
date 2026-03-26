@@ -1,0 +1,130 @@
+{
+  "dataset": "arcada-labs/conversation-bench",
+  "config": "default",
+  "split": "train",
+  "rows": [
+    {
+      "row_idx": 0,
+      "row": {
+        "turn_id": 41,
+        "input_text": "Cancel my registration for the Voice UX workshop and make sure the rest of my schedule stays the same.",
+        "golden_text": "I can cancel your Voice UX workshop registration while keeping the rest of your schedule unchanged. I'll use the cancellation tool for that specific session only.",
+        "required_function_call": [
+          {
+            "name": "cancel_action",
+            "args": {
+              "action_type": "registration",
+              "details": "Voice UX workshop"
+            }
+          }
+        ],
+        "function_call_response": [
+          {
+            "status": "success",
+            "message": "Canceled Voice UX workshop registration"
+          }
+        ],
+        "categories": [
+          "cancellation_flow",
+          "long_range_memory"
+        ],
+        "subcategory": "cancel_specific_session",
+        "scoring_dimensions": [
+          "tool_use_correct",
+          "instruction_following",
+          "kb_grounding",
+          "state_tracking"
+        ],
+        "audio_file": "audio/turn_041.wav"
+      }
+    },
+    {
+      "row_idx": 1,
+      "row": {
+        "turn_id": 42,
+        "input_text": "If that workshop is gone, do I still have anything booked at 4 PM?",
+        "golden_text": "After canceling the Voice UX workshop, you still have Kevin Zhang's session booked at 4 PM, so your schedule is not empty at that time.",
+        "required_function_call": null,
+        "function_call_response": null,
+        "categories": [
+          "cross_turn_reasoning",
+          "long_range_memory"
+        ],
+        "subcategory": "schedule_after_cancellation",
+        "scoring_dimensions": [
+          "instruction_following",
+          "kb_grounding",
+          "state_tracking"
+        ],
+        "audio_file": "audio/turn_042.wav"
+      }
+    },
+    {
+      "row_idx": 2,
+      "row": {
+        "turn_id": 43,
+        "input_text": "Register me for the GraphRAG session only if it does not conflict with the recommendation systems talk I kept earlier.",
+        "golden_text": "I'll first check for a schedule conflict with your existing recommendation systems session, and only register you for the GraphRAG session if there is no overlap.",
+        "required_function_call": [
+          {
+            "name": "check_schedule_conflict",
+            "args": {
+              "session_id_1": "graphrag_101",
+              "session_id_2": "recsys_204"
+            }
+          },
+          {
+            "name": "register_for_session",
+            "args": {
+              "name": "Jennifer Smith",
+              "session_id": "graphrag_101"
+            }
+          }
+        ],
+        "function_call_response": [
+          {
+            "status": "success",
+            "message": "No conflict detected"
+          },
+          {
+            "status": "success",
+            "message": "Registered for GraphRAG session"
+          }
+        ],
+        "categories": [
+          "multi_step_tool",
+          "long_range_memory"
+        ],
+        "subcategory": "conditional_chain",
+        "scoring_dimensions": [
+          "tool_use_correct",
+          "instruction_following",
+          "kb_grounding",
+          "state_tracking"
+        ],
+        "audio_file": "audio/turn_043.wav"
+      }
+    },
+    {
+      "row_idx": 3,
+      "row": {
+        "turn_id": 44,
+        "input_text": "Would moving the GraphRAG session to June 4th at 1:15 PM create any conflict with what I'm currently keeping?",
+        "golden_text": "No. After your earlier cancellation, you are no longer keeping anything else at June 4th 1:15 PM, so moving the GraphRAG session there would not conflict.",
+        "required_function_call": null,
+        "function_call_response": null,
+        "categories": [
+          "cross_turn_reasoning",
+          "long_range_memory"
+        ],
+        "subcategory": "hypothetical_reasoning",
+        "scoring_dimensions": [
+          "instruction_following",
+          "kb_grounding",
+          "state_tracking"
+        ],
+        "audio_file": "audio/turn_044.wav"
+      }
+    }
+  ]
+}

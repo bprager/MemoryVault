@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Active Decisions
 
@@ -231,3 +231,81 @@ Last updated: 2026-03-24
 - Status: active
 - Decision: use cheap graph bootstrapping and prompt adaptation to accelerate knowledge-plane onboarding, but do not let that provisional graph define control-plane truth.
 - Why: graph bootstrapping is useful for candidate structure and clustering, but it is too noisy and indirect to replace explicit task memory.
+
+### 2026-03-24: Start onboarding with representative traces and a held-out gate
+
+- Status: active
+- Decision: implement the first onboarding slice by learning a generated workspace profile from representative JSON traces, emitting an optional YAML starter pack, and validating it on held-out traces before trusting it.
+- Why: this is the smallest design that proves onboarding can learn from evidence instead of only writing metadata.
+
+### 2026-03-24: Make failure-marker expansion the first learned onboarding adaptation
+
+- Status: active
+- Decision: use the onboarding profile to expand the vocabulary that identifies `recent_failures` in resume packets.
+- Why: it creates a measurable held-out improvement with minimal extra complexity and gives the onboarding loop a real effect on task continuity.
+
+### 2026-03-24: Let onboarding learn non-default event labels from representative traces
+
+- Status: active
+- Decision: extend the onboarding profile so it can learn alternate event labels such as `Focus`, `Evidence`, and `Guardrail`, and feed those aliases back into candidate extraction.
+- Why: public and synthetic traces do not always use the same labels, and learning those patterns creates held-out improvements beyond failure recall.
+
+### 2026-03-24: Use saved Hugging Face row snapshots as the first public-data adapter path
+
+- Status: active
+- Decision: implement public dataset adapters around real Hugging Face row shapes, verified locally through saved `first-rows` style fixtures, with an optional dataset-viewer fetch path for live use.
+- Why: this keeps tests offline and repeatable while still aligning the adapter layer with real public dataset formats.
+
+### 2026-03-25: Track learned profiles as versioned strategy runs
+
+- Status: active
+- Decision: give each learned workspace profile a content-based version, record onboarding and transfer runs in a strategy tracker, and store short improvement notes alongside the run artifacts.
+- Why: the project now needs a stable way to compare learned profiles across runs and see whether a change helped, regressed, or only worked in one task family.
+
+### 2026-03-25: Require transfer evidence before calling a learned profile reusable
+
+- Status: active
+- Decision: add a transfer benchmark that learns on one task family and scores the learned profile on a different one before treating the profile as broadly useful.
+- Why: same-family gains are not enough evidence that the memory behavior is general rather than overfit.
+
+### 2026-03-25: Put category, cost, and lineage signals on each strategy record
+
+- Status: active
+- Decision: store improved-category counts, remaining-gap counts, task-family metrics, and basic cost signals directly on each strategy run record so the tracker can build cross-run summaries cheaply and consistently.
+- Why: top-level run scores alone are too shallow to show which gains repeat, what they cost, or how learned profiles evolve over time.
+
+### 2026-03-25: Accept refreshed profiles only on current benchmark improvement
+
+- Status: active
+- Decision: let the refresh loop carry forward prior successful profile settings as a candidate, but only replace the current profile when the held-out benchmark for the current workspace actually improves.
+- Why: prior strategy evidence is useful guidance, but it is not truth; the current workspace still needs proof that the proposed refresh helps rather than merely sounding plausible.
+
+### 2026-03-25: Let onboarding and refresh learn cue phrases from free-form notes
+
+- Status: active
+- Decision: extend the workspace profile beyond failure markers and label aliases so it can also learn and refresh short cue phrases from unlabeled notes, then use those cues during extraction.
+- Why: tracker evidence was already richer than the runtime behavior. Carrying forward cue phrases closes that gap and lets held-out benchmarks improve source handling and control-state recovery even when traces do not use explicit labels.
+
+### 2026-03-25: Measure cue phrases with a cue-disabled comparison
+
+- Status: active
+- Decision: for onboarding and transfer benchmarks, compare the full learned profile against the same profile with cue phrases turned off, then record the cue-only delta and cue-helped categories in the strategy tracker.
+- Why: this is the simplest way to tell which cue categories are actually helping and whether those gains transfer across task families, instead of assuming every profile gain came from the cue layer.
+
+### 2026-03-26: Freeze the first release benchmark as an offline public bundle
+
+- Status: active
+- Decision: make `python3 -m memoryvault release-benchmark` the fixed `0.5.x` release benchmark command over the saved TaskBench, SWE-bench Verified, QASPER, and conversation-bench fixtures, plus one TaskBench-to-conversation transfer check.
+- Why: `0.5.x` needs one repeatable release benchmark contract that stays offline, comparable across runs, and broad enough that no single task family defines release quality by itself.
+
+### 2026-03-26: Put schema markers on saved profile and benchmark artifacts
+
+- Status: active
+- Decision: include an explicit `artifact_schema_version` on saved workspace profiles and benchmark report artifacts while keeping the existing content-based `profile_version` for learned profiles.
+- Why: the release plan now requires a real compatibility story; schema markers make additive versus breaking changes visible before migration logic exists.
+
+### 2026-03-25: Define `MemoryVault 1.0` as a memory-learning workbench
+
+- Status: active
+- Decision: treat `MemoryVault 1.0` as a local-first memory-learning workbench that helps developers learn which memory strategies improve resumed long-running work.
+- Why: that boundary matches the implemented repo truthfully, keeps `0.5.0` honest, and avoids pretending the planned shared-service integration already exists.

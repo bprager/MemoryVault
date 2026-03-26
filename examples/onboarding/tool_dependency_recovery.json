@@ -1,0 +1,89 @@
+{
+  "scenario_id": "tool_dependency_recovery",
+  "title": "Resume a tool chain after an unavailable dependency",
+  "domain": "tool_use",
+  "goal": "Run the import workflow without sending the final notification before the validator succeeds.",
+  "interruption_point": "The run stopped after one unavailable dependency and a corrected ordering plan.",
+  "events": [
+    {
+      "actor": "user",
+      "text": "Goal: Run the import workflow without sending the final notification before the validator succeeds."
+    },
+    {
+      "actor": "assistant",
+      "text": "Plan: Fetch the input file, run the validator, start the import, then send the notification with the import id."
+    },
+    {
+      "actor": "assistant",
+      "text": "Constraint: Do not send the notification before the validator succeeds."
+    },
+    {
+      "actor": "tool",
+      "text": "Source: workflows/import/validator.run requires an uploaded file handle.",
+      "source_refs": [
+        "workflows/import/validator.run"
+      ]
+    },
+    {
+      "actor": "assistant",
+      "text": "Attempt: Ran the validator before fetching the file handle. The dependency was unavailable."
+    },
+    {
+      "actor": "assistant",
+      "text": "Lesson: The validator depends on the file handle from the fetch step."
+    },
+    {
+      "actor": "assistant",
+      "text": "Decision: Fetch the file first, then run the validator, then continue the import."
+    },
+    {
+      "actor": "assistant",
+      "text": "Next step: Fetch the file handle and rerun the validator before any notification draft."
+    }
+  ],
+  "expected_items": [
+    {
+      "name": "goal_guard",
+      "category": "goal",
+      "keywords": [
+        "import workflow",
+        "before the validator succeeds"
+      ]
+    },
+    {
+      "name": "protect_order",
+      "category": "constraint",
+      "keywords": [
+        "Do not send the notification"
+      ]
+    },
+    {
+      "name": "remember_unavailable_dependency",
+      "category": "recent_failures",
+      "keywords": [
+        "dependency was unavailable"
+      ]
+    },
+    {
+      "name": "keep_dependency_lesson",
+      "category": "lesson",
+      "keywords": [
+        "file handle"
+      ]
+    },
+    {
+      "name": "remember_next_step",
+      "category": "current_focus",
+      "keywords": [
+        "Fetch the file handle"
+      ]
+    },
+    {
+      "name": "keep_source_link",
+      "category": "source",
+      "keywords": [
+        "workflows/import/validator.run"
+      ]
+    }
+  ]
+}

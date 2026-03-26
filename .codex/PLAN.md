@@ -1,6 +1,6 @@
 # Plan
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Planning Mode
 
@@ -9,6 +9,26 @@ Implementation has now started with a local discovery harness whose job is to re
 The next architecture layer is now defined at the design level: a platform-neutral integration boundary that lets the same memory system serve local agents, remote agents, and multi-agent systems without binding the core logic to one host runtime.
 
 The next product-learning layer is also now defined at the design level: a zero-touch onboarding cycle that gets a new workspace to a first useful state quickly and then keeps improving it through evidence.
+
+That onboarding layer now has a first implemented slice: representative JSON traces or adapted Hugging Face rows can be sampled automatically, turned into a generated workspace profile and starter pack, and tested on held-out traces before the profile is trusted.
+
+Another research-driven addition now matters for the next stage: the tool should learn reusable memory behavior, not only per-dataset tricks. That means explicit performance tracking over strategy variants and transfer checks where a profile learned on one task family is tested on another.
+
+That strategy-learning addition now also has a first implemented slice: learned profiles now get content-based versions, onboarding and transfer runs now write strategy records plus short improvement notes, the CLI can test one task family against another using saved public-data fixtures, the tracker can now roll those runs up into category, cost, lineage, and cue-transfer summaries, and a refresh loop can now turn that evidence into a benchmark-gated candidate next profile with carried-forward cue phrases for free-form notes.
+
+The release path is now explicit too:
+
+- `0.5.x`: freeze the `1.0` product identity and the release benchmark contract
+- `0.6.x` to `0.8.x`: implement and harden one supported integration path plus artifact compatibility
+- `0.9.x`: operate as a release-candidate line
+- `1.0.0`: ship only when docs, benchmark, integration path, and compatibility promises all agree
+
+The first implemented slice of that `0.5.x` release work now exists too:
+
+- one fixed offline public benchmark bundle
+- one stable `release_benchmark_report.json` artifact
+- one narrow compatibility rule based on explicit artifact schema markers plus content-based profile versions
+- one explicit `1.0` product identity: a local-first memory-learning workbench
 
 ## Goal From First Principles
 
@@ -150,6 +170,37 @@ The preferred path is:
 - representative-sample adaptation
 - cheap first-pass graph bootstrapping
 - measured promotion from onboarding benchmarks and later task misses
+
+The current implemented version of that direction is intentionally narrow:
+
+- onboarding derives a workspace profile from representative traces
+- the generated starter pack is written as YAML
+- the held-out benchmark currently tests two learned adaptations:
+  - failure-marker expansion for `recent_failures`
+  - event-label alias learning for non-default markers such as `Focus`, `Evidence`, and `Guardrail`
+
+This is enough to validate the onboarding loop itself without pretending the full adaptation plan is already built.
+
+### Strategy-learning direction
+
+The next evaluation layer should make memory learning cumulative and comparable:
+
+- `strategy tracker`: record quality, cost, task family, profile version, and run lineage over time
+- `improvement insight store`: keep timestamped summaries of what likely helped, what regressed, and what should be tried next
+- `transfer gate`: test whether a learned workspace profile or memory policy helps on a different task family
+- `variant archive`: keep comparable strategy variants instead of mutating only the latest profile in place
+
+This is the useful part of the `HyperAgents` paper for MemoryVault: not self-modifying agents, but evidence that persistent memory plus performance tracking can become reusable improvement machinery across domains.
+
+The currently implemented slice of that direction is still intentionally simple:
+
+- one strategy record per onboarding or transfer run
+- one small set of timestamped improvement notes per run
+- one transfer gate that compares baseline and adapted scoring on a different task family
+- one CLI summary that rolls up recurring wins and gaps, task-family impact, cost patterns, profile summaries, and workspace lineages
+- one refresh loop that carries forward prior successful aliases, failure markers, cue phrases, source priorities, and starter-pack hints, but only accepts the candidate profile when the current held-out benchmark improves
+
+This is enough to start measuring reuse without pretending that the repo already has a full policy archive, evolutionary search loop, or large-scale cross-benchmark strategy harness.
 
 ### Active task package
 

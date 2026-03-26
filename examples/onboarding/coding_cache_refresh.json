@@ -1,0 +1,89 @@
+{
+  "scenario_id": "coding_cache_refresh",
+  "title": "Preserve a cache-refresh rollback after a stale result",
+  "domain": "coding",
+  "goal": "Refresh the report cache without serving stale totals to the dashboard.",
+  "interruption_point": "The run stopped after a stale-cache patch and a safer follow-up plan.",
+  "events": [
+    {
+      "actor": "user",
+      "text": "Goal: Refresh the report cache without serving stale totals to the dashboard."
+    },
+    {
+      "actor": "assistant",
+      "text": "Plan: Inspect the cache invalidation path, patch the refresh trigger, rerun the dashboard smoke test, and keep the old response shape."
+    },
+    {
+      "actor": "assistant",
+      "text": "Constraint: Do not change the dashboard response schema because the analytics client still depends on it."
+    },
+    {
+      "actor": "tool",
+      "text": "Source: tests/test_dashboard_cache.py::test_refresh_after_import failed with stale totals after import.",
+      "source_refs": [
+        "tests/test_dashboard_cache.py::test_refresh_after_import"
+      ]
+    },
+    {
+      "actor": "assistant",
+      "text": "Attempt: Added a local cache bypass in the view layer. The result stayed stale."
+    },
+    {
+      "actor": "assistant",
+      "text": "Decision: Keep the view layer untouched and refresh the shared cache entry instead."
+    },
+    {
+      "actor": "assistant",
+      "text": "Lesson: The stale response comes from the shared cache key, not the dashboard serializer."
+    },
+    {
+      "actor": "assistant",
+      "text": "Next step: Patch the shared cache invalidation path and rerun the smoke test."
+    }
+  ],
+  "expected_items": [
+    {
+      "name": "goal_guard",
+      "category": "goal",
+      "keywords": [
+        "report cache",
+        "stale totals"
+      ]
+    },
+    {
+      "name": "protect_schema",
+      "category": "constraint",
+      "keywords": [
+        "response schema"
+      ]
+    },
+    {
+      "name": "remember_stale_failure",
+      "category": "recent_failures",
+      "keywords": [
+        "stayed stale"
+      ]
+    },
+    {
+      "name": "remember_cache_lesson",
+      "category": "lesson",
+      "keywords": [
+        "shared cache key"
+      ]
+    },
+    {
+      "name": "remember_next_step",
+      "category": "current_focus",
+      "keywords": [
+        "shared cache invalidation"
+      ]
+    },
+    {
+      "name": "keep_source_link",
+      "category": "source",
+      "keywords": [
+        "tests/test_dashboard_cache.py::test_refresh_after_import"
+      ]
+    }
+  ]
+}

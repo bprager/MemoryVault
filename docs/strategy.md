@@ -1,12 +1,16 @@
 # MemoryVault strategy
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## What this project is now
 
 MemoryVault is being developed as a tool, not as a domain-specific product.
 
+The chosen `1.0` boundary is now explicit too: `MemoryVault 1.0` is a local-first memory-learning workbench, not yet a shared production memory service.
+
 The tool starts with almost no domain knowledge. Its job is to observe long-running work, test what gets lost across interruptions, and learn which kinds of memory actually help. It should become more effective over time by comparing strategies, not by assuming the right memory model from the start.
+
+The concrete release path from the current prototype state to `1.0.0` now lives in [docs/release_plan.md](release_plan.md).
 
 ## Core stance
 
@@ -64,6 +68,10 @@ Before the durable schema hardens, add a zero-touch onboarding cycle that can:
 
 The detailed design now lives in [docs/onboarding_strategy.md](onboarding_strategy.md).
 
+The first concrete implementation of this phase now exists too. The repo can build a generated workspace profile from representative JSON traces or adapted public dataset rows, emit an optional starter pack, and test that profile on held-out traces before trusting it.
+
+That implemented slice now also records a version for each learned profile, stores short improvement notes, can test transfer from one task family to another, can summarize recurring wins, recurring gaps, cost patterns, profile history, and cue-transfer results across runs, and can run a benchmark-gated refresh loop that proposes a next profile from prior successful evidence, including learned cue phrases for free-form notes.
+
 ### Phase 3: Memory field discovery
 
 Use repeated misses to propose candidate durable fields.
@@ -109,7 +117,10 @@ stop
 @enduml
 ```
 
-The first concrete implementation of this phase now exists: the Memory Wind Tunnel in [docs/wind_tunnel.md](wind_tunnel.md). It removes one memory field at a time and measures the damage.
+The first concrete implementation of this phase now exists in two forms:
+
+- the Memory Wind Tunnel in [docs/wind_tunnel.md](wind_tunnel.md), which removes one memory field at a time and measures the damage
+- the new strategy tracker and transfer benchmark, which record learned profile runs and test whether a profile helps on another task family
 
 ### Phase 5: Durable storage and retrieval
 
@@ -137,12 +148,20 @@ The detailed design now lives in [docs/integration_strategy.md](integration_stra
 
 In the later phase, the tool should do more than remember. It should learn which memory policies make it better.
 
-That means:
+That now means:
 
 - tracking which fields helped
 - tracking which retrieval bundles were sufficient
 - tracking which summaries caused harm
 - tracking which strategies reduced repeated failure
+
+The first thin implementation of that later phase is now in place:
+
+- one strategy record per onboarding or transfer run
+- one short set of improvement notes per run
+- one offline transfer benchmark over saved synthetic or public-data-shaped fixtures
+- one cross-run summary that rolls up category wins and gaps, task-family impact, basic cost signals, profile history, and workspace lineages
+- one explicit refresh loop that turns those rollups into a candidate next profile and keeps it only when the held-out benchmark improves
 
 The end state is a memory tool that improves by observing its own successes and misses.
 
@@ -171,10 +190,9 @@ This keeps the tool honest. It also avoids shaping the architecture around one n
 
 ## Immediate next phases
 
-1. Expand the synthetic trace library so the wind tunnel sees more than one or two memory patterns.
-2. Add Hugging Face adapters for at least one dataset from each major group: code, tool-use, long-memory conversation, and evidence-grounded documents.
-3. Define the onboarding flow, generated starter pack, and benchmark gate for the next minor release.
-4. Lock down the integration contracts for the planned HTTP core, MCP adapter, and event plane.
+1. Implement one supported integration path in the `0.6.x` line.
+2. Harden compatibility and release reporting in the `0.7.x` to `0.8.x` line.
+3. Use `0.9.x` as a real release-candidate line rather than another normal minor release.
+4. Keep expanding the learned cue set and measuring which gains transfer.
 5. Compare whole memory strategies, not only single-field removals.
 6. Promote only the next few high-value fields, not a large schema all at once.
-7. Delay graph complexity until the tool can already show that its learned fields improve resume quality across several task families.

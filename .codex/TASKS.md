@@ -1,6 +1,6 @@
 # Tasks
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Active
 
@@ -19,24 +19,28 @@ Last updated: 2026-03-24
 - Keep `pyproject.toml` and the latest released section in `Changelog.md` in sync.
 - Keep the integration design platform-neutral and centered on one canonical service boundary.
 - Keep onboarding zero-touch by default and manual preparation optional.
+- Keep the onboarding benchmark gate evidence-based; generated starter packs should not be trusted without held-out checks.
+- Keep the pre-1.0 release path honest; do not cut `1.0.0` while the supported surface is still ambiguous.
 
 ## Next
 
+- Implement one supported integration path in the `0.6.x` line.
+- Add compatibility and migration checks for workspace profiles and strategy artifacts before `0.9.x`.
+- Define the final `1.0` release gate and run it on a `0.9.x` release-candidate line.
 - Expand the synthetic interrupted-task library across several generic task shapes.
-- Add Hugging Face dataset adapters for code, tool-use, long-memory conversation, and evidence-grounded document tasks.
+- Add more Hugging Face dataset adapters beyond the current TaskBench, SWE-bench Verified, QASPER, and conversation-bench set.
 - Add a review loop that summarizes repeated misses and wind-tunnel damage across runs and task families.
 - Decide which repeated misses graduate into the next durable memory fields after `assumptions`.
-- Improve `recent_failures` extraction so weak or wrong attempts are retained even when they do not use the word `failed`.
+- Expand onboarding cue learning beyond the current free-form focus, decision, lesson, question, source, constraint, and blocker patterns.
 - Define the deterministic resume packet for general long-running work, including goal reminder and current-state header.
 - Define workspace isolation for the shared Memgraph instance on `odin:7697`.
-- Define the onboarding flow for the next release.
-- Define the generated starter pack schema and regeneration rules.
-- Define the onboarding benchmark gate and refresh loop.
+- Broaden the generated starter pack beyond learned failure markers and event-label aliases.
+- Expand the Hugging Face onboarding path beyond saved row snapshots and the first three adapters.
+- Expand the onboarding refresh loop beyond the first carried-forward cue phrases and test which ones generalize across task families.
 - Define the HTTP API contract that the MCP adapter and SDKs will share.
 - Define the CloudEvents event contract for invalidation, rebuilds, and async memory work.
 - Define the cache-key strategy, invalidation rules, and lease model for multi-agent use.
 - Extend strategy comparison from single-field ablations to whole memory-policy comparisons.
-- Add cross-run observability summaries so strategy comparisons include time and stage cost.
 - Define the scratchpad or working-state lifecycle explicitly.
 - Define declarative memory update operations and conflict handling.
 - Define how procedural playbooks should grow, refine, and retire without monolithic rewrites.
@@ -68,16 +72,27 @@ Last updated: 2026-03-24
 - Added a release-version sync check so future releases use the same version in `pyproject.toml` and `Changelog.md`.
 - Added a documented hybrid integration strategy for HTTP, MCP, multi-agent coordination, and caching.
 - Added a documented onboarding, priming, and learning strategy for the next minor release.
+- Implemented a first onboarding flow with representative sampling, generated workspace profiles, YAML starter packs, and a held-out benchmark gate over bundled synthetic traces.
+- Broadened the onboarding flow so it now learns event-label aliases and can run on adapted Hugging Face TaskBench, SWE-bench Verified, QASPER, and conversation-bench style rows.
+- Added profile versions, strategy records, and improvement notes for onboarding and transfer runs.
+- Added an offline transfer benchmark and CLI summaries for strategy runs.
+- Added deeper strategy-tracker rollups for category wins and gaps, task-family impact, cost patterns, profile summaries, and workspace lineages.
+- Added a benchmark-gated onboarding refresh loop that turns prior successful strategy evidence into a candidate next profile revision.
+- Added learned cue phrases for free-form notes and taught the refresh loop to carry those cues forward when they improve held-out traces.
+- Added cue-only benchmark measurements and tracker summaries so the project can see which cue categories actually transfer across task families.
+- Added a fixed offline `release-benchmark` command and `release_benchmark_report.json` artifact for the first public release bundle.
+- Added schema-version markers to saved workspace profiles and benchmark artifacts as the first narrow compatibility promise.
+- Released `0.5.0` with one explicit `1.0` identity: a local-first memory-learning workbench.
 
 ## Likely First Milestones
 
-1. Synthetic and Hugging Face benchmark adapters
+1. More Hugging Face adapters and larger public-data samples
 2. Next durable field promotions after `assumptions`
 3. Whole-strategy comparison across task families
-4. Cross-run observability summaries
-5. Onboarding flow, starter pack, and benchmark gate
-6. Canonical HTTP service contract and MCP adapter
-7. Cache and lease model for shared multi-agent use
-8. Workspace namespace and schema bootstrap
-9. Session store plus explicit task / plan / outcome graph
-10. Provenance and confidence model for durable memories
+4. Richer cross-run strategy summaries
+5. Broaden onboarding adaptation beyond the current learned cue phrases and keep verifying transfer
+6. Onboarding refresh loop and profile maintenance
+7. Canonical HTTP service contract and MCP adapter
+8. Cache and lease model for shared multi-agent use
+9. Workspace namespace and schema bootstrap
+10. Session store plus explicit task / plan / outcome graph

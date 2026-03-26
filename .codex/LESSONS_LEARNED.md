@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-03-24
+Last updated: 2026-03-25
 
 ## Current Lessons
 
@@ -119,3 +119,43 @@ If the tool is supposed to discover what matters across different kinds of work,
 ### Fast graph bootstrapping is useful only if it stays provisional
 
 Cheap first-pass graph extraction can make onboarding faster, but it should feed discovery and ranking, not replace explicit goal, plan, and failure memory.
+
+### A narrow learned adaptation is enough to prove the onboarding loop
+
+The first onboarding slice does not need to learn everything. Learning one useful adaptation, then proving it helps on held-out traces, is a much better milestone than generating a broad profile that never changes behavior.
+
+### Representative sampling should stay deterministic
+
+Choosing one trace per domain first and holding the rest out makes the onboarding artifacts reproducible and keeps benchmark results comparable across runs.
+
+### Public-data adapters are safer when tests use saved row snapshots
+
+Using saved Hugging Face row payloads keeps the local quality gate deterministic and fast, while still forcing the adapter code to match real public dataset shapes.
+
+### Learning event labels matters when public traces are not written in our house style
+
+As soon as onboarding can learn markers like `Focus`, `Evidence`, and `Guardrail`, it starts improving held-out scores on public-style traces instead of only on hand-authored examples.
+
+### Cross-family transfer needs a slightly softer gate than same-family onboarding
+
+The first offline transfer benchmark showed a real improvement on a different task family, but it did not hit the stricter onboarding threshold. Transfer checks should still require positive evidence, but they do not need to demand the same absolute score as a same-family held-out gate.
+
+### Profile versions should follow profile contents, not workspace names
+
+If the version is tied to the workspace id, rerunning the same learned profile under a different label looks like a different strategy. A content-based version makes comparison cleaner and makes transfer runs easier to reason about.
+
+### Strategy tracking gets more useful when each run carries reusable aggregates
+
+If the tracker only stores one top-line score per run, every deeper question turns into reopening old benchmark files. Putting category counts, family metrics, and basic cost signals directly on the strategy record makes cross-run summaries cheap, deterministic, and easy to compare.
+
+### Refresh suggestions should stay provisional until the current benchmark agrees
+
+Past successful profiles are useful hints, but they can still overfit old traces or a neighboring task family. The safest refresh loop is: build a candidate from prior evidence, benchmark it on the current held-out traces, and only keep it if the benchmark improves.
+
+### Tracker improvements are only real when they change extraction behavior
+
+It is easy to let the tracker learn richer metadata than the runtime actually uses. That creates the appearance of progress without improving resumed work. The safer rule is: only count a richer signal as implemented when it changes extraction or resume behavior and clears the same held-out benchmark gate as everything else.
+
+### Transfer claims get stronger when the new signal is isolated
+
+If a benchmark only compares "nothing learned" against "everything learned," it is hard to tell which part of the profile actually caused the gain. A cue-disabled comparison is cheap and usually good enough to separate "the profile helped" from "the cue layer specifically helped."

@@ -1,0 +1,96 @@
+{
+  "scenario_id": "research_followup_summary",
+  "title": "Resume a summary rewrite after another weak draft",
+  "domain": "research",
+  "goal": "Finish the evidence-grounded summary without smoothing over the source differences.",
+  "interruption_point": "The run stopped after a second weak draft and a narrowed plan.",
+  "events": [
+    {
+      "actor": "user",
+      "text": "Goal: Finish the evidence-grounded summary without smoothing over the source differences."
+    },
+    {
+      "actor": "assistant",
+      "text": "Plan: Re-read the disagreement notes, keep each claim attached to its source, and rewrite the summary around the contested points."
+    },
+    {
+      "actor": "assistant",
+      "text": "Constraint: Do not collapse the differences into one blended claim."
+    },
+    {
+      "actor": "assistant",
+      "text": "Source: docs/memory_strategy_b.md says raw history should stay searchable for re-checking.",
+      "source_refs": [
+        "docs/memory_strategy_b.md"
+      ]
+    },
+    {
+      "actor": "assistant",
+      "text": "Attempt: Rewrote the summary from the old draft. The summary stayed weak because the disputed claims still lacked source anchors."
+    },
+    {
+      "actor": "assistant",
+      "text": "Lesson: The weak rewrite came from reusing the old draft instead of rebuilding from the evidence rows."
+    },
+    {
+      "actor": "assistant",
+      "text": "Decision: Rebuild the summary from the evidence rows and list the contested claims explicitly."
+    },
+    {
+      "actor": "assistant",
+      "text": "Next step: Reopen the evidence matrix and rewrite the contested section claim by claim."
+    }
+  ],
+  "expected_items": [
+    {
+      "name": "goal_guard",
+      "category": "goal",
+      "keywords": [
+        "evidence-grounded summary",
+        "source differences"
+      ]
+    },
+    {
+      "name": "protect_differences",
+      "category": "constraint",
+      "keywords": [
+        "blended claim"
+      ]
+    },
+    {
+      "name": "remember_weak_summary",
+      "category": "recent_failures",
+      "keywords": [
+        "summary stayed weak"
+      ]
+    },
+    {
+      "name": "keep_rebuild_lesson",
+      "category": "lesson",
+      "keywords": [
+        "rebuilding from the evidence rows"
+      ]
+    },
+    {
+      "name": "keep_rebuild_decision",
+      "category": "decision",
+      "keywords": [
+        "claims explicitly"
+      ]
+    },
+    {
+      "name": "remember_next_step",
+      "category": "current_focus",
+      "keywords": [
+        "rewrite the contested section"
+      ]
+    },
+    {
+      "name": "keep_source_link",
+      "category": "source",
+      "keywords": [
+        "docs/memory_strategy_b.md"
+      ]
+    }
+  ]
+}

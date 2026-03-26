@@ -40,6 +40,11 @@ class LocalArtifactStore:
         self._write_json(target, payload)
         return target
 
+    def append_jsonl_artifact(self, filename: str | Path, payload: Any) -> Path:
+        target = self.base_dir / filename
+        self._append_jsonl(target, payload)
+        return target
+
     def _write_json(self, path: Path, payload: Any) -> None:
         path.write_text(
             json.dumps(_normalize(payload), indent=2) + "\n",
