@@ -19,8 +19,7 @@ Last updated: 2026-03-25
 - `docs/integration_strategy.md` now defines the planned platform-neutral integration strategy for HTTP, MCP, multi-agent use, and caching.
 - `docs/onboarding_strategy.md` now defines the planned onboarding, priming, and learning cycle for the next minor release.
 - `docs/release_plan.md` now defines the concrete path from the current prototype line to `1.0.0`.
-- `factory_context_compression_memgraph_design.md` contains a detailed design proposal for a Memgraph-based context compression system with anchor points.
-- The design proposal has now been ingested into the repo-local planning documents in `.codex/`.
+- The earlier standalone root design note has been retired after its useful content was folded into the repo-local planning documents in `.codex/`.
 - The first batch of five external research documents has been assessed and folded into the repo-local planning documents.
 - The second batch of five external research documents has been assessed and folded into the repo-local planning documents.
 - The final batch of user-provided research documents has been assessed and folded into the repo-local planning documents.

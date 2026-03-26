@@ -16,12 +16,6 @@ Last updated: 2026-03-25
 - Decision: add a root `AGENTS.md` that instructs future Codex sessions to read and maintain `.codex/`.
 - Why: creating the files alone is not enough; the repo needs a stable entry point that makes the workflow repeatable.
 
-### 2026-03-24: Treat the large root design note as a design reference, not implementation evidence
-
-- Status: active
-- Decision: use `factory_context_compression_memgraph_design.md` as the current architecture reference while keeping repo status documents honest about the implementation gap.
-- Why: the repo already contains substantial design thinking, but the shipped code is still only a bootstrap.
-
 ### 2026-03-24: Stay in planning mode before implementation
 
 - Status: active

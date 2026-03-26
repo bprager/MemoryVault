@@ -41,14 +41,6 @@ It should be treated as a tool for memory-strategy learning, not as a finished d
 
 For the `1.0` boundary, that tool framing is now explicit: the supported product is a local-first memory-learning workbench, while the shared-service integration remains later work.
 
-## Primary Design Source
-
-The detailed design proposal currently lives in:
-
-- `factory_context_compression_memgraph_design.md`
-
-That document is the main source for the intended architecture until the implementation grows enough to require more detailed repo-local architecture notes.
-
 ## Core Concepts From The Existing Design
 
 - Treat task goals, plans, constraints, and outcomes as first-class memory, not as incidental text.
