@@ -6,13 +6,12 @@ from time import perf_counter
 from uuid import uuid4
 
 from .evaluation import evaluate_resume_packet
-from .extractor import extract_candidates
 from .importer import load_scenario_file
 from .logging_utils import get_logger
 from .models import EvaluationReport, ResumePacket, RunManifest, Scenario, WindTunnelReport
 from .observability import ObservabilityTracker
-from .resume import build_resume_packet
 from .scenarios import get_scenario, list_scenarios
+from .service import build_resume_packet_from_candidates, extract_memory_candidates
 from .storage import LocalArtifactStore
 from .wind_tunnel import build_wind_tunnel_report
 
@@ -38,11 +37,14 @@ def run_loaded_scenario(scenario: Scenario, base_dir: str | Path = "var/memoryva
     tracker.record_stage("manifest", stage_started)
 
     stage_started = perf_counter()
-    candidates = extract_candidates(scenario.events, fallback_goal=scenario.goal)
+    candidates = extract_memory_candidates(
+        scenario.events,
+        goal=scenario.goal,
+    )
     tracker.record_stage("extract_candidates", stage_started)
 
     stage_started = perf_counter()
-    packet = build_resume_packet(manifest, candidates)
+    packet = build_resume_packet_from_candidates(manifest, candidates)
     tracker.record_stage("build_resume_packet", stage_started)
 
     stage_started = perf_counter()

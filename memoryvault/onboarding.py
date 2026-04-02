@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import re
 from time import perf_counter
-from typing import Iterable, Mapping
+from typing import Any, Iterable, Mapping
 from uuid import uuid4
 
 from .evaluation import evaluate_resume_packet
@@ -17,6 +17,7 @@ from .logging_utils import get_logger
 from .models import (
     EvaluationReport,
     ImprovementInsight,
+    ONBOARDING_BENCHMARK_SCHEMA_VERSION,
     OnboardingBenchmarkReport,
     OnboardingScenarioResult,
     ProfileRefreshPlan,
@@ -27,16 +28,23 @@ from .models import (
     StrategyProfileSummary,
     StrategyRunKindSummary,
     StrategyRunRecord,
+    STRATEGY_RUN_RECORD_SCHEMA_VERSION,
     StrategyTaskFamilySummary,
     StrategyTrackerSummary,
     StrategyWorkspaceLineage,
     TransferBenchmarkReport,
+    TRANSFER_BENCHMARK_SCHEMA_VERSION,
     WorkspaceProfile,
+    WORKSPACE_PROFILE_SCHEMA_VERSION,
 )
 from .resume import DEFAULT_FAILURE_MARKERS, build_resume_packet
 from .storage import LocalArtifactStore
 
 LOGGER = get_logger("onboarding")
+
+
+class ArtifactCompatibilityError(ValueError):
+    """Raised when a saved onboarding or strategy artifact is incompatible."""
 
 REQUIRED_CONTROL_FIELDS = [
     "goal",
@@ -1528,7 +1536,7 @@ def load_strategy_records(base_dir: str | Path) -> list[StrategyRunRecord]:
         stripped = line.strip()
         if not stripped:
             continue
-        records.append(StrategyRunRecord(**json.loads(stripped)))
+        records.append(load_strategy_record_payload(json.loads(stripped), source_path=path))
     return records
 
 
@@ -1639,8 +1647,141 @@ def load_workspace_profiles_for_records(records: list[StrategyRunRecord]) -> dic
 
 
 def load_workspace_profile(path: str | Path) -> WorkspaceProfile:
+    payload = _load_json_payload(path)
+    return load_workspace_profile_payload(payload, source_path=path)
+
+
+def load_workspace_profile_payload(
+    payload: dict[str, Any],
+    *,
+    source_path: str | Path | None = None,
+) -> WorkspaceProfile:
+    compatible_payload = _normalize_artifact_payload(
+        payload,
+        expected_schema=WORKSPACE_PROFILE_SCHEMA_VERSION,
+        artifact_label="workspace profile",
+        source_path=source_path,
+    )
+    try:
+        return WorkspaceProfile(**compatible_payload)
+    except TypeError as error:
+        raise _invalid_artifact_error("workspace profile", source_path, error) from error
+
+
+def load_onboarding_benchmark(path: str | Path) -> OnboardingBenchmarkReport:
+    payload = _load_json_payload(path)
+    return load_onboarding_benchmark_payload(payload, source_path=path)
+
+
+def load_onboarding_benchmark_payload(
+    payload: dict[str, Any],
+    *,
+    source_path: str | Path | None = None,
+) -> OnboardingBenchmarkReport:
+    compatible_payload = _normalize_artifact_payload(
+        payload,
+        expected_schema=ONBOARDING_BENCHMARK_SCHEMA_VERSION,
+        artifact_label="onboarding benchmark",
+        source_path=source_path,
+    )
+    scenario_results = [
+        OnboardingScenarioResult(**item)
+        for item in compatible_payload.pop("scenario_results", [])
+    ]
+    try:
+        return OnboardingBenchmarkReport(
+            **compatible_payload,
+            scenario_results=scenario_results,
+        )
+    except TypeError as error:
+        raise _invalid_artifact_error("onboarding benchmark", source_path, error) from error
+
+
+def load_transfer_benchmark(path: str | Path) -> TransferBenchmarkReport:
+    payload = _load_json_payload(path)
+    return load_transfer_benchmark_payload(payload, source_path=path)
+
+
+def load_transfer_benchmark_payload(
+    payload: dict[str, Any],
+    *,
+    source_path: str | Path | None = None,
+) -> TransferBenchmarkReport:
+    compatible_payload = _normalize_artifact_payload(
+        payload,
+        expected_schema=TRANSFER_BENCHMARK_SCHEMA_VERSION,
+        artifact_label="transfer benchmark",
+        source_path=source_path,
+    )
+    scenario_results = [
+        OnboardingScenarioResult(**item)
+        for item in compatible_payload.pop("scenario_results", [])
+    ]
+    try:
+        return TransferBenchmarkReport(
+            **compatible_payload,
+            scenario_results=scenario_results,
+        )
+    except TypeError as error:
+        raise _invalid_artifact_error("transfer benchmark", source_path, error) from error
+
+
+def load_strategy_record(path: str | Path) -> StrategyRunRecord:
+    payload = _load_json_payload(path)
+    return load_strategy_record_payload(payload, source_path=path)
+
+
+def load_strategy_record_payload(
+    payload: dict[str, Any],
+    *,
+    source_path: str | Path | None = None,
+) -> StrategyRunRecord:
+    compatible_payload = _normalize_artifact_payload(
+        payload,
+        expected_schema=STRATEGY_RUN_RECORD_SCHEMA_VERSION,
+        artifact_label="strategy record",
+        source_path=source_path,
+    )
+    try:
+        return StrategyRunRecord(**compatible_payload)
+    except TypeError as error:
+        raise _invalid_artifact_error("strategy record", source_path, error) from error
+
+
+def _load_json_payload(path: str | Path) -> dict[str, Any]:
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
-    return WorkspaceProfile(**payload)
+    if not isinstance(payload, dict):
+        raise ArtifactCompatibilityError(f"{Path(path)} must contain a JSON object")
+    return payload
+
+
+def _normalize_artifact_payload(
+    payload: dict[str, Any],
+    *,
+    expected_schema: str,
+    artifact_label: str,
+    source_path: str | Path | None = None,
+) -> dict[str, Any]:
+    compatible_payload = dict(payload)
+    schema_version = compatible_payload.get("artifact_schema_version")
+    if schema_version is None:
+        compatible_payload["artifact_schema_version"] = expected_schema
+        return compatible_payload
+    if schema_version != expected_schema:
+        location = f" in {source_path}" if source_path is not None else ""
+        raise ArtifactCompatibilityError(
+            f"Unsupported {artifact_label} schema{location}: {schema_version}. Expected {expected_schema}."
+        )
+    return compatible_payload
+
+
+def _invalid_artifact_error(
+    artifact_label: str,
+    source_path: str | Path | None,
+    error: TypeError,
+) -> ArtifactCompatibilityError:
+    location = f"{source_path} " if source_path is not None else ""
+    return ArtifactCompatibilityError(f"{location}is not a valid {artifact_label}: {error}")
 
 
 def summarize_category_counts(

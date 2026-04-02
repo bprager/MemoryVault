@@ -1,6 +1,6 @@
 # MemoryVault tool requirements
 
-Last updated: 2026-03-25
+Last updated: 2026-04-01
 
 ## Summary
 
@@ -28,7 +28,7 @@ The release path from the current prototype line to a truthful `1.0.0` is captur
 
 It is for learning which memory structures and retrieval strategies help long-running work resume cleanly across task families.
 
-It is not, in `1.0`, a shared production memory service, a finalized HTTP or MCP product surface, or a live production-trace platform.
+It is not, in `1.0`, a shared production memory service, a finalized shared HTTP or MCP platform surface, or a live production-trace platform.
 
 ## Problem
 
@@ -121,6 +121,14 @@ The tool needs distinct layers for:
 
 These layers should be linked, but they should not be collapsed into one blob.
 
+Within durable memory, the system should also keep different roles distinct:
+
+- source evidence: what the system directly observed or imported
+- derived summaries: compact views built from that evidence
+- judgment-like records: conclusions or preferences that go beyond raw observation
+
+This matters because a generated summary or conclusion should not silently replace the underlying source-backed record.
+
 ### 4. Keep source and trust information
 
 High-value memory items must keep:
@@ -128,7 +136,7 @@ High-value memory items must keep:
 - source references
 - provenance
 - confidence or trust signals
-- time or freshness metadata where it matters
+- when something happened and when it was recorded or updated, where that distinction matters
 
 The system should be able to point back to the source of a memory instead of asking the model to "just remember."
 
@@ -217,6 +225,35 @@ The current preferred integration shape is:
 
 The system should stay platform-neutral by keeping the core service contract independent from any one agent host or SDK.
 
+The first implemented integration slice is now intentionally small:
+
+- one local HTTP service
+- one shared local service core behind it
+- four endpoints for the first supported workflow:
+  - append task events
+  - create or update task state
+  - read a resume packet
+  - retrieve the control-plane memory view
+- explicit version markers on that narrow path:
+  - `api_version: "v1"` in HTTP request and response envelopes
+  - `artifact_schema_version: "service_task_state.v1"` in saved local task-state files
+- local compatibility behavior on that path:
+  - schema-less local task-state files are treated as legacy `service_task_state.v1`
+  - unknown local task-state schemas fail with clear compatibility errors
+- write protection on that path:
+  - state-changing writes accept `If-Match` with the current `task_version`
+  - stale writes fail with a clear precondition error instead of silently overwriting newer state
+- retry protection on that path:
+  - state-changing writes may include `Idempotency-Key`
+  - a repeated write with the same key and the same request returns the original result
+  - reusing the same key for a different write fails clearly
+- request validation on that path:
+  - state-changing request bodies must be JSON objects
+  - malformed nested event and expected-item payloads fail clearly before any task state is changed
+- a monotonic `task_version` counter on each saved task aggregate so repeated updates and event appends are visible and testable
+
+This began as the first concrete `0.6.x` slice and now serves as the supported path on the released `1.0.0` line.
+
 ### 10. Become useful quickly in a new workspace
 
 MemoryVault should not require a human to hand-author an ontology before it works.
@@ -250,12 +287,68 @@ The current `0.5.x` release benchmark contract is intentionally small and repeat
 
 This is the first release benchmark contract, not the final `1.0.0` gate.
 
+## Current release verification gate
+
+The released `1.0.0` line keeps a concrete verification command:
+
+- `python3 -m memoryvault release-candidate-check`
+
+That gate verifies the current `1.0` promise and helps keep later maintenance releases honest. It checks:
+
+- product identity agreement across the README, PRD, and release plan
+- the current supported integration surface for the local HTTP path
+- the documented and implemented compatibility story for core saved artifacts
+- the presence of the normal quality gate
+- the fixed release benchmark bundle definition
+- and, unless `--skip-benchmark` is used, one real execution of the release benchmark bundle
+
+This keeps the released `1.0.0` support promise runnable instead of leaving it as documentation only.
+
+## Current `1.0` support promise
+
+For the released `1.0.0` line, the `1.0` support promise is explicit:
+
+- supported integration surface:
+  - the local HTTP path with `POST /v1/events`
+  - `PUT /v1/tasks/{task_id}/state`
+  - `GET /v1/tasks/{task_id}/resume-packet`
+  - `POST /v1/tasks/{task_id}/retrieve`
+- supported verification commands:
+  - `python3 -m memoryvault release-benchmark`
+  - `python3 -m memoryvault release-candidate-check`
+- supported saved artifacts:
+  - `workspace_profile.json`
+  - `onboarding_benchmark.json`
+  - `transfer_benchmark.json`
+  - `strategy_record.json`
+  - `release_benchmark_report.json`
+  - local task-state files written as `service_task_state.v1`
+
+Version upgrade expectations for that supported surface are:
+
+- additive fields are allowed within a schema version
+- breaking shape or meaning changes require a new schema version
+- a new schema version also requires a documented migration path or an explicit break notice in the release notes
+
+## Experimental And Non-Contractual
+
+The following surfaces are still treated as non-contractual on the stable line:
+
+- built-in sample and demo commands
+- public-data discovery commands
+- Hugging Face adapter workflow commands
+- bundled sample data ids and example fixture layouts
+
+They can still be useful, but they are not part of the stable `1.0` support promise.
+
 ## Current artifact compatibility rule
 
 The current compatibility promise is also intentionally narrow:
 
 - `workspace_profile.json` carries both a content-based `profile_version` and an `artifact_schema_version`
-- `onboarding_benchmark.json`, `transfer_benchmark.json`, and `release_benchmark_report.json` carry an `artifact_schema_version`
+- `onboarding_benchmark.json`, `transfer_benchmark.json`, `strategy_record.json`, and `release_benchmark_report.json` carry an `artifact_schema_version`
+- schema-less early versions of those saved artifacts are treated as legacy current-version files from the pre-`1.0` line
+- unknown schema versions fail clearly instead of being guessed at
 - additive fields are allowed within the current schema version
 - removing fields, renaming fields, or changing meaning requires a new schema version and a documented migration or explicit break notice before a stable release
 
@@ -307,7 +400,7 @@ MemoryVault is succeeding when:
 
 ## Current scope boundaries
 
-The repo is now in an early discovery-prototype stage.
+The repo is now in an early stable-product stage for the supported `1.0` surface, while broader shared-service work remains earlier-stage design work.
 
 Today the project already has:
 
@@ -322,10 +415,11 @@ Today the project already has:
 - a Memory Wind Tunnel that removes memory fields and ranks the damage
 - built-in and imported synthetic traces for several task shapes
 - a registry of Hugging Face benchmark leads for later evaluation
-- a local commit gate that requires Python linting, Markdown linting, passing tests, and at least 90% coverage
+- a local commit gate that requires Python linting, Markdown linting, passing tests, and at least 95% coverage
 - basic logging and observability artifacts for local runs
 - an integration strategy for HTTP, MCP, multi-agent coordination, and caching
 - an onboarding strategy for zero-touch priming, optional starter packs, and ongoing learning
+- a first local HTTP service slice for task-state updates, event appends, resume-packet reads, and control-plane retrieval
 
 Today the project does not yet have:
 
@@ -336,7 +430,7 @@ Today the project does not yet have:
 - live Hugging Face downloads wired into automated tests
 - broad strategy comparison across multiple public task families
 - centralized dashboards or external tracing infrastructure
-- the planned HTTP core service, MCP adapter, event plane, or shared-cache layer
+- the planned MCP adapter, event plane, or shared-cache layer
 - the prompt-adaptation and provisional graph-bootstrapping parts of the planned onboarding flow
 
 ## Open tool questions
@@ -353,6 +447,9 @@ Today the project does not yet have:
 - How much human curation should be required before durable memory changes?
 - What is the right default boundary between fast retrieval and deeper rehydration?
 - How should importance, freshness, and confidence be combined for ranking?
+- How should durable memory label source evidence, derived summaries, and judgment-like records without making the first schema too heavy?
+- When should MemoryVault track both when something happened and when it was recorded or updated?
+- When is multi-channel retrieval worth its extra cost over simpler retrieval paths?
 
 ## Short version
 

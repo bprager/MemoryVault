@@ -1,6 +1,6 @@
 # Research Intake
 
-Last updated: 2026-03-25
+Last updated: 2026-03-30
 
 ## Batch 1: User-Provided Documents
 
@@ -386,4 +386,26 @@ Last updated: 2026-03-25
 ## Batch 6 Summary
 
 - Useful now in a bounded way: `HyperAgents`
+- Rejected as irrelevant: none
+
+## Batch 7: Hindsight Technical Report
+
+### 1. Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects
+
+- File: `/Users/bernd/Desktop/2512.12818v1.pdf`
+- Verdict: accept, useful now with caution
+- Why it matters: it gives a concrete pattern for separating source facts, agent experience, derived summaries, and subjective judgments, and it reinforces temporal metadata plus multi-channel retrieval instead of one retrieval path.
+- Adopt now:
+  - keep source evidence, derived views, and subjective judgments distinct in durable memory
+  - treat summaries or entity and task profiles as derived views regenerated from underlying evidence, not as the truth source
+  - record both when something happened and when it was recorded when that distinction affects retrieval or auditability
+- Adopt later:
+  - add multi-channel retrieval that can blend semantic, lexical, graph, and temporal signals for the knowledge plane
+- Keep the caution:
+  - the experimental write-up still has rough edges, including unresolved `<add>` placeholders and some baseline reuse from outside reports
+  - preference-conditioned opinion modeling is not a phase-1 need for MemoryVault; the control plane should stay objective
+
+## Batch 7 Summary
+
+- Useful now with caution: `Hindsight is 20/20`
 - Rejected as irrelevant: none

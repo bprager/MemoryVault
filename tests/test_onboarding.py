@@ -9,11 +9,20 @@ from pathlib import Path
 
 from memoryvault.cli import main as cli_main
 from memoryvault.importer import load_scenarios_from_directory
-from memoryvault.models import ExpectedItem, Scenario, TaskEvent
+from memoryvault.models import (
+    ExpectedItem,
+    ONBOARDING_BENCHMARK_SCHEMA_VERSION,
+    Scenario,
+    TaskEvent,
+    WORKSPACE_PROFILE_SCHEMA_VERSION,
+)
 from memoryvault.onboarding import (
+    ArtifactCompatibilityError,
     build_workspace_profile,
     classify_source_ref,
     evaluate_scenario_with_profile,
+    load_onboarding_benchmark,
+    load_workspace_profile,
     onboard_directory,
     render_starter_pack_yaml,
     run_onboarding_benchmark,
@@ -175,6 +184,55 @@ class OnboardingTests(unittest.TestCase):
             self.assertIn("workspace_id: 'synthetic_workspace'", starter_pack)
             self.assertIn(f"profile_version: '{profile.profile_version}'", starter_pack)
             self.assertIn("- 'weak'", starter_pack)
+
+    def test_legacy_schema_less_profile_and_benchmark_still_load(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir, profile, benchmark = onboard_directory(
+                "examples/onboarding",
+                base_dir=temp_dir,
+                workspace_id="compat_workspace",
+            )
+            profile_path = run_dir / "workspace_profile.json"
+            benchmark_path = run_dir / "onboarding_benchmark.json"
+
+            profile_payload = json.loads(profile_path.read_text(encoding="utf-8"))
+            profile_payload.pop("artifact_schema_version")
+            profile_path.write_text(json.dumps(profile_payload, indent=2) + "\n", encoding="utf-8")
+
+            benchmark_payload = json.loads(benchmark_path.read_text(encoding="utf-8"))
+            benchmark_payload.pop("artifact_schema_version")
+            benchmark_path.write_text(json.dumps(benchmark_payload, indent=2) + "\n", encoding="utf-8")
+
+            loaded_profile = load_workspace_profile(profile_path)
+            loaded_benchmark = load_onboarding_benchmark(benchmark_path)
+
+            self.assertEqual(loaded_profile.profile_version, profile.profile_version)
+            self.assertEqual(loaded_profile.artifact_schema_version, WORKSPACE_PROFILE_SCHEMA_VERSION)
+            self.assertEqual(loaded_benchmark.profile_version, benchmark.profile_version)
+            self.assertEqual(loaded_benchmark.artifact_schema_version, ONBOARDING_BENCHMARK_SCHEMA_VERSION)
+
+    def test_profile_and_benchmark_loaders_reject_unknown_schema_versions(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir, _profile, _benchmark = onboard_directory(
+                "examples/onboarding",
+                base_dir=temp_dir,
+                workspace_id="compat_workspace",
+            )
+            profile_path = run_dir / "workspace_profile.json"
+            benchmark_path = run_dir / "onboarding_benchmark.json"
+
+            profile_payload = json.loads(profile_path.read_text(encoding="utf-8"))
+            profile_payload["artifact_schema_version"] = "workspace_profile.v9"
+            profile_path.write_text(json.dumps(profile_payload, indent=2) + "\n", encoding="utf-8")
+
+            benchmark_payload = json.loads(benchmark_path.read_text(encoding="utf-8"))
+            benchmark_payload["artifact_schema_version"] = "onboarding_benchmark.v9"
+            benchmark_path.write_text(json.dumps(benchmark_payload, indent=2) + "\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ArtifactCompatibilityError, "Unsupported workspace profile schema"):
+                load_workspace_profile(profile_path)
+            with self.assertRaisesRegex(ArtifactCompatibilityError, "Unsupported onboarding benchmark schema"):
+                load_onboarding_benchmark(benchmark_path)
 
     def test_render_starter_pack_yaml_uses_profile_data(self) -> None:
         scenarios = load_scenarios_from_directory("examples/onboarding")

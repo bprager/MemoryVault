@@ -42,7 +42,7 @@ Last updated: 2026-03-24
 - Whenever non-simulated input is needed, prefer public Hugging Face datasets.
 - Public benchmark data should be adapted into interrupted-task resume checks instead of being treated only as one-shot benchmark scores.
 - Early real-task intake should use a simple inspectable file format before live capture is added.
-- Any local commit gate should require passing Python linting, Markdown linting, release-version sync checks, the test suite, and at least 90% coverage.
+- Any local commit gate should require passing Python linting, Markdown linting, release-version sync checks, the test suite, and at least 95% coverage.
 - Logging and observability should stay local-first and lightweight until broader strategy comparison exists.
 
 ## Workflow Constraints

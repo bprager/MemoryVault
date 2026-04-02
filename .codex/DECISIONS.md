@@ -1,6 +1,6 @@
 # Decisions
 
-Last updated: 2026-03-25
+Last updated: 2026-03-31
 
 ## Active Decisions
 
@@ -232,6 +232,18 @@ Last updated: 2026-03-25
 - Decision: implement the first onboarding slice by learning a generated workspace profile from representative JSON traces, emitting an optional YAML starter pack, and validating it on held-out traces before trusting it.
 - Why: this is the smallest design that proves onboarding can learn from evidence instead of only writing metadata.
 
+### 2026-03-31: Make the `1.0` support promise explicit and executable
+
+- Status: active
+- Decision: document the `0.9.x` support promise in the README, PRD, and release plan, and make the release-candidate gate fail if those docs drift or if experimental CLI commands are not marked clearly in help text.
+- Why: a release-candidate line is only trustworthy if the stable surface is explicit and the non-contractual surface is clearly separated instead of being left implicit.
+
+### 2026-04-01: Cut `1.0.0` on the smaller local-first boundary
+
+- Status: active
+- Decision: ship `1.0.0` around the stable local-first workbench boundary that was rehearsed on `0.9.x`, and keep `python3 -m memoryvault release-candidate-check` as the repo-local release verification command for the stable line.
+- Why: the supported HTTP path, verification commands, compatibility rules, and benchmark gate are now implemented, documented, and verified together, while the broader shared-service work is still honestly outside the first stable boundary.
+
 ### 2026-03-24: Make failure-marker expansion the first learned onboarding adaptation
 
 - Status: active
@@ -303,3 +315,51 @@ Last updated: 2026-03-25
 - Status: active
 - Decision: treat `MemoryVault 1.0` as a local-first memory-learning workbench that helps developers learn which memory strategies improve resumed long-running work.
 - Why: that boundary matches the implemented repo truthfully, keeps `0.5.0` honest, and avoids pretending the planned shared-service integration already exists.
+
+### 2026-03-27: Put explicit version markers on the first local HTTP slice
+
+- Status: active
+- Decision: require the first local HTTP slice to use `api_version: "v1"` in HTTP request and response envelopes, and require saved local task-state files to use `artifact_schema_version: "service_task_state.v1"` with a monotonic `task_version`.
+- Why: the first supported integration path needs an explicit compatibility story from the start, not only after outside callers have already started depending on unstable payload shapes.
+
+### 2026-03-30: Keep evidence, derived views, and judgments separate
+
+- Status: active
+- Decision: when the durable knowledge-plane schema hardens, tag records as source evidence, derived view, or judgment-like memory, and carry both occurrence time and recorded or updated time when the source allows it.
+- Why: the Hindsight paper reinforces an architectural rule that already fits MemoryVault well: the system should be able to tell what it observed from what it inferred, without letting generated summaries quietly replace objective control-plane truth.
+
+### 2026-03-30: Treat schema-less local task files as legacy `v1`
+
+- Status: active
+- Decision: load local task-state files without an `artifact_schema_version` as legacy `service_task_state.v1`, but reject unknown schema versions with a clear compatibility error instead of guessing.
+- Why: the first local service slice already created saved task files and callers. A narrow legacy default keeps early local artifacts readable while still making real incompatibilities explicit.
+
+### 2026-03-30: Use `If-Match` with `task_version` for the first write precondition
+
+- Status: active
+- Decision: support optimistic concurrency on local HTTP writes by accepting `If-Match` with the current `task_version`, and return `412 Precondition Failed` when the write is stale.
+- Why: the local service already had monotonic task versions. Reusing that existing version counter is the smallest honest way to prevent lost updates without introducing a second write-token scheme.
+
+### 2026-03-30: Use `Idempotency-Key` for safe local HTTP retries
+
+- Status: active
+- Decision: support optional `Idempotency-Key` on local HTTP writes and persist the first result so a retry with the same key and same write returns the original response, while the same key on a different write returns a conflict.
+- Why: once optimistic concurrency is in place, the next correctness gap is duplicate retries. Reusing the original result is the smallest local-first way to make retries safe without replaying the write.
+
+### 2026-03-30: Treat schema-less profile, benchmark, and strategy artifacts as legacy `v1`
+
+- Status: active
+- Decision: load schema-less `workspace_profile.json`, onboarding benchmark, transfer benchmark, release benchmark report, and strategy record artifacts as legacy current-version files, but reject unknown schema versions with explicit compatibility errors.
+- Why: the repo already wrote these artifacts before every loader enforced schema checks. A narrow legacy fallback keeps early local artifacts usable while still making real incompatibilities impossible to miss.
+
+### 2026-03-30: Reject non-object JSON bodies at the HTTP boundary
+
+- Status: active
+- Decision: require local HTTP write bodies to be JSON objects, and fail malformed nested event and expected-item payloads before they can reach service-layer mutation logic.
+- Why: syntactically valid JSON is not enough for a safe write contract. Boundary validation is cheaper and clearer than letting wrong shapes trigger unhandled runtime errors or partial state changes.
+
+### 2026-03-31: Use one repo-local release-candidate gate for the future `0.9.x` line
+
+- Status: active
+- Decision: define the planned `0.9.x` line around one concrete gate command, `python3 -m memoryvault release-candidate-check`, instead of leaving the final `1.0` gate as documentation only.
+- Why: a release-candidate phase only matters if the repo can run the same gate repeatedly. Making the gate executable now keeps the later `0.9.x` line honest and reduces the chance that release-week arguments redefine `1.0` on the fly.

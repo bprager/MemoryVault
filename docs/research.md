@@ -1,6 +1,6 @@
 # Research Summary
 
-Last updated: 2026-03-25
+Last updated: 2026-03-30
 
 ## Purpose
 
@@ -19,7 +19,9 @@ The current design assumption is that the tool begins without private production
 - The highest-priority memory is the active objective, current plan, success criteria, constraints, blockers, and prior outcomes.
 - Session history, scratchpads, curated long-term memory, and exact raw history should be separate layers with different lifecycles.
 - Retrieval should be goal-conditioned, but durable memory must stay tied to evidence and provenance so the system does not drift into self-confirming stories.
+- Durable memory should distinguish source evidence, derived summaries, and subjective judgments so the system can tell what it saw from what it inferred.
 - Long-horizon agents need an explicit goal reminder and a structured current-state header at runtime, not just a large pile of retrieved text.
+- Time should usually mean both when something happened and when the system recorded or updated it.
 - Durable declarative memory should use bounded maintenance actions such as add, update, invalidate, and no-op.
 - Procedural memory should evolve as curated playbooks that accumulate tactics, checks, and failure-avoidance patterns.
 - Monolithic whole-context rewriting is risky because it can collapse rich context into shallow summaries.
@@ -48,6 +50,8 @@ The current design assumption is that the tool begins without private production
   - Lesson: memory must be judged as a quality-versus-cost trade-off, not only by retrieval quality.
 - [HyperAgents](https://arxiv.org/abs/2603.19461): persistent memory and performance tracking emerged as transferable self-improvement mechanisms.
   - Lesson: track strategy performance over time and test whether learned memory behavior transfers across task families.
+- [Hindsight is 20/20](https://doi.org/10.48550/arXiv.2512.12818): memory should distinguish "world facts, agent experiences, synthesized entity summaries, and evolving beliefs."
+  - Lesson: keep evidence, derived views, and judgments distinct instead of mixing them into one memory bucket.
 
 ## Source Assessments
 
@@ -111,6 +115,11 @@ The current design assumption is that the tool begins without private production
   - Why it matters: graph retrieval and graph ranking can outperform flat retrieval for multi-hop questions.
   - Carry into MemoryVault: add graph-native ranking such as Personalized PageRank after the first deterministic baseline works.
 
+- [Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects](https://doi.org/10.48550/arXiv.2512.12818)
+  - Why it matters: it provides a concrete software-facing pattern for separating evidence from derived summaries and subjective judgments, while also reinforcing temporal metadata and fused retrieval.
+  - Carry into MemoryVault: keep source evidence, derived views, and any future judgment layer distinct; track both occurrence time and recorded time when possible; regenerate summaries from evidence changes rather than treating them as truth.
+  - Caution: the paper still has some rough edges in its evaluation write-up, and its preference-conditioned opinion layer is not a near-term need for MemoryVault's control plane.
+
 - [From Local to Global: A Graph RAG Approach to Query-Focused Summarization](https://www.microsoft.com/en-us/research/publication/from-local-to-global-a-graph-rag-approach-to-query-focused-summarization/)
   - Why it matters: graph communities and summaries help with large-corpus sensemaking.
   - Carry into MemoryVault: useful for later corpus-level summaries and high-level planning views.
@@ -150,8 +159,12 @@ The current design assumption is that the tool begins without private production
 - Scratchpads and working state are explicit and auditable; they do not become durable memory automatically.
 - Prompt assembly should always start with a deterministic task package that includes the goal and current state.
 - Declarative memory should use explicit maintenance actions with provenance and confidence.
+- Durable knowledge-plane records should say whether they are source evidence, a derived summary, or a judgment-like record so retrieval can mix them safely.
+- Time metadata should distinguish when the underlying event happened from when MemoryVault recorded or updated it.
 - Procedural memory should be maintained as evolving playbooks, with structured growth and review instead of whole-playbook rewrites.
 - Graph structure should first serve control-state retrieval, provenance, and evidence linkage before more ambitious knowledge modeling.
+- Derived summaries should be treated as regenerable views over evidence, not as primary truth.
+- Later knowledge-plane retrieval should be able to fuse semantic, keyword, graph, and temporal signals instead of committing to a single channel.
 - Benchmarking should include plan adherence, failure avoidance, task completion, token cost, latency, and extra tool or retrieval steps.
 - Until real traces exist, benchmark input should come from synthetic traces and public Hugging Face datasets that can be converted into interrupted-task evaluations.
 - The learning loop should also track profile versions, measured quality and cost over time, and whether improvements transfer across task families.
@@ -226,7 +239,7 @@ One practical addition from Hugging Face's dataset-viewer documentation is also 
 
 ## Current Bottom Line
 
-The research still does not support starting with compression. It supports starting with reliable control-state memory, goal-aware retrieval, explicit state tracking, source-grounded durable memory, and carefully curated procedural playbooks. The new `HyperAgents` paper does not change that priority order. What it adds is a stronger reason to treat performance tracking and transfer evaluation as part of the memory-learning loop, so MemoryVault can tell whether a learned profile is becoming generally useful instead of merely overfitting one task family.
+The research still does not support starting with compression. It supports starting with reliable control-state memory, goal-aware retrieval, explicit state tracking, source-grounded durable memory, and carefully curated procedural playbooks. The `HyperAgents` paper strengthened the case for performance tracking and transfer evaluation, and the `Hindsight` paper strengthened the case for keeping evidence, derived views, and judgments separate while carrying richer time semantics. Neither changes the priority order: control-plane truth still comes first.
 
 ## Public Benchmark Leads
 

@@ -7,8 +7,18 @@ from statistics import mean
 from uuid import uuid4
 
 from .hf_adapters import load_and_adapt_hf_rows
-from .models import ReleaseBenchmarkCaseResult, ReleaseBenchmarkReport
-from .onboarding import onboard_scenarios, transfer_scenarios
+from .models import (
+    RELEASE_BENCHMARK_REPORT_SCHEMA_VERSION,
+    ReleaseBenchmarkCaseResult,
+    ReleaseBenchmarkReport,
+)
+from .onboarding import (
+    ArtifactCompatibilityError,
+    _load_json_payload,
+    _normalize_artifact_payload,
+    onboard_scenarios,
+    transfer_scenarios,
+)
 from .release_checks import ensure_version_sync
 from .storage import LocalArtifactStore
 
@@ -118,6 +128,27 @@ def run_release_benchmark(
     )
     LocalArtifactStore(report_dir).save_json_artifact(report_dir, "release_benchmark_report.json", report)
     return report_dir, report
+
+
+def load_release_benchmark_report(path: str | Path) -> ReleaseBenchmarkReport:
+    payload = _load_json_payload(path)
+    compatible_payload = _normalize_artifact_payload(
+        payload,
+        expected_schema=RELEASE_BENCHMARK_REPORT_SCHEMA_VERSION,
+        artifact_label="release benchmark report",
+        source_path=path,
+    )
+    case_results = [
+        ReleaseBenchmarkCaseResult(**item)
+        for item in compatible_payload.pop("case_results", [])
+    ]
+    try:
+        return ReleaseBenchmarkReport(
+            **compatible_payload,
+            case_results=case_results,
+        )
+    except TypeError as error:
+        raise ArtifactCompatibilityError(f"{Path(path)} is not a valid release benchmark report: {error}") from error
 
 
 def _run_onboarding_case(case_spec: OnboardingCaseSpec, bundle_runs_dir: Path) -> ReleaseBenchmarkCaseResult:

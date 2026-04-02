@@ -1,6 +1,6 @@
 # Plan
 
-Last updated: 2026-03-25
+Last updated: 2026-04-01
 
 ## Planning Mode
 
@@ -29,6 +29,20 @@ The first implemented slice of that `0.5.x` release work now exists too:
 - one stable `release_benchmark_report.json` artifact
 - one narrow compatibility rule based on explicit artifact schema markers plus content-based profile versions
 - one explicit `1.0` product identity: a local-first memory-learning workbench
+
+That `0.6.0` milestone now also has a first implemented slice:
+
+- one thin local HTTP service as the first supported integration path
+- one intentionally narrow first contract:
+  - append events
+  - update task state
+  - get a deterministic resume packet
+  - retrieve the control-plane memory view
+- one shared service-layer core so the CLI and HTTP path do not fork behavior
+
+The next hardening work should therefore focus on maintaining the stable support promise, remaining benchmark confidence, and schema decisions rather than on inventing a different first integration surface. The repo has now cut `1.0.0` from the exercised `release/0.9.x` line, and the first compatibility floor is in place for local task state plus the saved profile, benchmark, strategy, and release-report artifacts. MCP, CloudEvents, Memgraph wiring, and shared multi-agent concerns remain later work.
+
+The latest release-management rule remains explicit after the stable cut: the repo must state which surfaces are part of the `1.0` support promise and which remain experimental. That support promise centers on the four-endpoint local HTTP path, the release verification commands, and the schema-bearing saved artifacts. Sample, demo, and public-data helper commands remain useful, but they are not part of the stable `1.0` contract and should stay marked as experimental until the project deliberately promotes them.
 
 ## Goal From First Principles
 
@@ -262,6 +276,7 @@ Core entities:
 Core rule:
 
 - semantic retrieval and graph expansion support the task, but do not override control-plane memory
+- durable knowledge-plane items should declare whether they are source evidence, derived views, or judgment-like records so retrieval can keep those roles distinct
 
 ## New Guidance From Research Intake
 
@@ -334,6 +349,18 @@ That suggests a practical onboarding rule for MemoryVault:
 - optional soft hints second
 - manual ontology work only when the workspace truly needs it
 
+### 15. Evidence, derived views, and judgments need separate lanes
+
+The Hindsight paper reinforces a design rule that fits MemoryVault well: source evidence, synthesized summaries, and any subjective judgments should not be stored as if they were the same kind of memory. Derived views are useful, but they should not silently replace what the system actually observed.
+
+### 16. Time needs occurrence and record semantics
+
+When possible, durable memory should track both when something happened and when MemoryVault recorded or updated it. That distinction matters for historical retrieval, freshness, and conflict review.
+
+### 17. The knowledge plane should grow toward fused retrieval
+
+For the knowledge plane, the future retrieval target should blend lexical, semantic, graph, and temporal signals, then spend reranking cost only when the task justifies it.
+
 ## Retrieval Strategy
 
 Use a hybrid strategy:
@@ -342,7 +369,7 @@ Use a hybrid strategy:
 2. explicit goal reminder and current-state header
 3. anchor and invariant fetch
 4. graph expansion from task, files, symbols, decisions, and recent failures
-5. semantic and text retrieval for supporting evidence
+5. semantic, text, and temporal retrieval for supporting evidence
 6. rehydration of exact raw content only where precision is required
 
 Under token pressure, the last item to drop should be broad semantic detail, not task state or the goal-and-state header.
@@ -362,12 +389,16 @@ For higher-cost retrieval paths, the system should have a clear threshold for wh
 
 - memory manager interface: expose `update()` and `retrieve()` at the module boundary
 - declarative memory management: prefer explicit add / update / invalidate / noop operations
+- memory classes: mark durable knowledge-plane items as evidence, derived view, or judgment and keep their update rules separate
 - task-state retrieval: deterministic graph queries keyed by active task and plan state
 - anchor importance: transparent heuristics first, not learned weights
 - graph expansion: bounded traversal with task-aware edge priorities
+- time semantics: carry occurrence and recorded or updated time where the source allows it
 - graph ranking: combine anchor score, task overlap, freshness, evidence support, and graph distance
 - graph-native retrieval boost: use Personalized PageRank or similar neighborhood scoring once the baseline works
+- future retrieval fusion: combine lexical, semantic, graph, and temporal candidates before optional reranking on the knowledge plane
 - summaries: start extractive or hybrid for high-risk memory, not purely abstractive
+- derived views: regenerate summaries or profiles asynchronously from evidence changes instead of hand-editing them as primary truth
 - failure learning: store explicit reflective outcomes from attempts rather than only free-form summaries
 - scratchpad handling: keep transient reasoning artifacts separate from durable memory and promote only validated outcomes
 - prompt assembly: always include an explicit goal reminder and structured current-state section for the active task

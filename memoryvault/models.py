@@ -3,6 +3,13 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
+SERVICE_TASK_STATE_SCHEMA_VERSION = "service_task_state.v1"
+WORKSPACE_PROFILE_SCHEMA_VERSION = "workspace_profile.v1"
+ONBOARDING_BENCHMARK_SCHEMA_VERSION = "onboarding_benchmark.v1"
+TRANSFER_BENCHMARK_SCHEMA_VERSION = "transfer_benchmark.v1"
+RELEASE_BENCHMARK_REPORT_SCHEMA_VERSION = "release_benchmark_report.v1"
+STRATEGY_RUN_RECORD_SCHEMA_VERSION = "strategy_run_record.v1"
+
 
 def to_dict(instance: Any) -> dict[str, Any]:
     return asdict(instance)
@@ -70,6 +77,43 @@ class ResumePacket:
     open_questions: list[str]
     sources: list[str]
     candidate_counts: dict[str, int]
+
+
+@dataclass(slots=True)
+class ServiceTaskState:
+    task_id: str
+    title: str
+    domain: str
+    goal: str
+    interruption_point: str
+    events: list[TaskEvent]
+    expected_items: list[ExpectedItem]
+    created_at: str
+    updated_at: str
+    task_version: int = 1
+    artifact_schema_version: str = SERVICE_TASK_STATE_SCHEMA_VERSION
+
+
+@dataclass(slots=True)
+class TaskMemoryView:
+    task_id: str
+    title: str
+    domain: str
+    goal: str
+    interruption_point: str
+    event_count: int
+    task_version: int
+    candidate_summaries: dict[str, list[str]]
+    resume_packet: ResumePacket
+
+
+@dataclass(slots=True)
+class IdempotencyRecord:
+    key: str
+    request_fingerprint: str
+    status_code: int
+    response_payload: dict[str, Any]
+    created_at: str
 
 
 @dataclass(slots=True)
@@ -170,7 +214,7 @@ class WorkspaceProfile:
     candidate_fields: list[str]
     generation_notes: list[str]
     cue_phrases: dict[str, list[str]] = field(default_factory=dict)
-    artifact_schema_version: str = "workspace_profile.v1"
+    artifact_schema_version: str = WORKSPACE_PROFILE_SCHEMA_VERSION
 
 
 @dataclass(slots=True)
@@ -205,7 +249,7 @@ class OnboardingBenchmarkReport:
     recommended_actions: list[str]
     cue_disabled_average_score: float = 0.0
     cue_average_score_delta: float = 0.0
-    artifact_schema_version: str = "onboarding_benchmark.v1"
+    artifact_schema_version: str = ONBOARDING_BENCHMARK_SCHEMA_VERSION
 
 
 @dataclass(slots=True)
@@ -226,7 +270,7 @@ class TransferBenchmarkReport:
     recommended_actions: list[str]
     cue_disabled_average_score: float = 0.0
     cue_average_score_delta: float = 0.0
-    artifact_schema_version: str = "transfer_benchmark.v1"
+    artifact_schema_version: str = TRANSFER_BENCHMARK_SCHEMA_VERSION
 
 
 @dataclass(slots=True)
@@ -268,7 +312,7 @@ class ReleaseBenchmarkReport:
     cue_average_score_delta: float
     gate_passed: bool
     case_results: list[ReleaseBenchmarkCaseResult]
-    artifact_schema_version: str = "release_benchmark_report.v1"
+    artifact_schema_version: str = RELEASE_BENCHMARK_REPORT_SCHEMA_VERSION
 
 
 @dataclass(slots=True)
@@ -355,6 +399,7 @@ class StrategyRunRecord:
     remaining_gap_category_counts: dict[str, int] = field(default_factory=dict)
     cue_helped_category_counts: dict[str, int] = field(default_factory=dict)
     evaluation_task_family_metrics: dict[str, dict[str, float | int]] = field(default_factory=dict)
+    artifact_schema_version: str = STRATEGY_RUN_RECORD_SCHEMA_VERSION
 
 
 @dataclass(slots=True)

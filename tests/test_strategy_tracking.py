@@ -9,8 +9,14 @@ from pathlib import Path
 
 from memoryvault.cli import main as cli_main
 from memoryvault.hf_adapters import load_and_adapt_hf_rows
-from memoryvault.models import ExpectedItem, Scenario, TaskEvent
-from memoryvault.onboarding import summarize_strategy_records, transfer_scenarios
+from memoryvault.models import ExpectedItem, STRATEGY_RUN_RECORD_SCHEMA_VERSION, Scenario, TaskEvent
+from memoryvault.onboarding import (
+    ArtifactCompatibilityError,
+    load_strategy_record,
+    load_transfer_benchmark,
+    summarize_strategy_records,
+    transfer_scenarios,
+)
 
 
 class StrategyTrackingTests(unittest.TestCase):
@@ -50,6 +56,91 @@ class StrategyTrackingTests(unittest.TestCase):
 
             tracker_lines = (Path(temp_dir) / "strategy_tracker.jsonl").read_text(encoding="utf-8").strip().splitlines()
             self.assertEqual(len(tracker_lines), 1)
+
+    def test_legacy_schema_less_strategy_and_transfer_artifacts_still_load(self) -> None:
+        source_scenarios = load_and_adapt_hf_rows("hf_taskbench", "examples/huggingface_rows/taskbench_first_rows.json")
+        target_scenarios = load_and_adapt_hf_rows(
+            "hf_conversation_bench",
+            "examples/huggingface_rows/conversation_bench_first_rows.json",
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir, profile, _source_benchmark, transfer_benchmark = transfer_scenarios(
+                source_scenarios,
+                target_scenarios,
+                base_dir=temp_dir,
+                workspace_id="compat_transfer_workspace",
+            )
+
+            strategy_path = run_dir / "strategy_record.json"
+            strategy_payload = json.loads(strategy_path.read_text(encoding="utf-8"))
+            strategy_payload.pop("artifact_schema_version")
+            strategy_path.write_text(json.dumps(strategy_payload, indent=2) + "\n", encoding="utf-8")
+
+            tracker_path = Path(temp_dir) / "strategy_tracker.jsonl"
+            tracker_payload = json.loads(tracker_path.read_text(encoding="utf-8").strip())
+            tracker_payload.pop("artifact_schema_version")
+            tracker_path.write_text(json.dumps(tracker_payload) + "\n", encoding="utf-8")
+
+            benchmark_path = run_dir / "transfer_benchmark.json"
+            benchmark_payload = json.loads(benchmark_path.read_text(encoding="utf-8"))
+            benchmark_payload.pop("artifact_schema_version")
+            benchmark_path.write_text(json.dumps(benchmark_payload, indent=2) + "\n", encoding="utf-8")
+
+            loaded_record = load_strategy_record(strategy_path)
+            loaded_benchmark = load_transfer_benchmark(benchmark_path)
+            summary = summarize_strategy_records(temp_dir)
+
+            self.assertEqual(loaded_record.profile_version, profile.profile_version)
+            self.assertEqual(loaded_record.artifact_schema_version, STRATEGY_RUN_RECORD_SCHEMA_VERSION)
+            self.assertEqual(loaded_benchmark.profile_version, transfer_benchmark.profile_version)
+            self.assertEqual(summary.total_records, 1)
+
+    def test_strategy_summary_rejects_unknown_strategy_record_schema(self) -> None:
+        source_scenarios = load_and_adapt_hf_rows("hf_taskbench", "examples/huggingface_rows/taskbench_first_rows.json")
+        target_scenarios = load_and_adapt_hf_rows(
+            "hf_conversation_bench",
+            "examples/huggingface_rows/conversation_bench_first_rows.json",
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _run_dir, _profile, _source_benchmark, _transfer_benchmark = transfer_scenarios(
+                source_scenarios,
+                target_scenarios,
+                base_dir=temp_dir,
+                workspace_id="compat_transfer_workspace",
+            )
+
+            tracker_path = Path(temp_dir) / "strategy_tracker.jsonl"
+            tracker_payload = json.loads(tracker_path.read_text(encoding="utf-8").strip())
+            tracker_payload["artifact_schema_version"] = "strategy_run_record.v9"
+            tracker_path.write_text(json.dumps(tracker_payload) + "\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ArtifactCompatibilityError, "Unsupported strategy record schema"):
+                summarize_strategy_records(temp_dir)
+
+    def test_transfer_benchmark_loader_rejects_unknown_schema(self) -> None:
+        source_scenarios = load_and_adapt_hf_rows("hf_taskbench", "examples/huggingface_rows/taskbench_first_rows.json")
+        target_scenarios = load_and_adapt_hf_rows(
+            "hf_conversation_bench",
+            "examples/huggingface_rows/conversation_bench_first_rows.json",
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir, _profile, _source_benchmark, _transfer_benchmark = transfer_scenarios(
+                source_scenarios,
+                target_scenarios,
+                base_dir=temp_dir,
+                workspace_id="compat_transfer_workspace",
+            )
+
+            benchmark_path = run_dir / "transfer_benchmark.json"
+            benchmark_payload = json.loads(benchmark_path.read_text(encoding="utf-8"))
+            benchmark_payload["artifact_schema_version"] = "transfer_benchmark.v9"
+            benchmark_path.write_text(json.dumps(benchmark_payload, indent=2) + "\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ArtifactCompatibilityError, "Unsupported transfer benchmark schema"):
+                load_transfer_benchmark(benchmark_path)
 
     def test_strategy_summary_reports_cue_transfer_by_category(self) -> None:
         source_scenarios = [

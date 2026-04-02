@@ -1,6 +1,6 @@
 # Research
 
-Last updated: 2026-03-25
+Last updated: 2026-03-30
 
 ## Primary Sources Reviewed
 
@@ -122,6 +122,13 @@ Last updated: 2026-03-25
 - URL: `https://arxiv.org/abs/2603.19461`
 - Key takeaway: persistent memory and performance tracking emerged as transferable self-improvement mechanisms across several task families, but the paper is mainly about self-referential agent improvement rather than memory architecture.
 - Implication for MemoryVault: keep performance tracking and synthesized improvement insights as first-class inputs to memory-policy learning, and test whether learned profiles transfer across task families instead of only improving one benchmark.
+
+### Hindsight
+
+- Source: `Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects`
+- URL: `https://doi.org/10.48550/arXiv.2512.12818`
+- Key takeaway: durable memory works better when source evidence, derived summaries, and subjective judgments stay explicitly separate, carry strong temporal metadata, and are retrieved through more than one channel.
+- Implication for MemoryVault: keep the control plane objective, add explicit memory-class markers when the knowledge-plane schema hardens, carry both occurrence time and recorded or updated time where possible, and treat summaries as regenerable views over evidence instead of primary truth.
 
 ### Memory and the self
 

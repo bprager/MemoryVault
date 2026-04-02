@@ -14,4 +14,4 @@ python3 scripts/markdown_lint.py README.md AGENTS.md Changelog.md docs .codex
 python3 scripts/check_version_sync.py
 python3 -m coverage erase
 python3 -m coverage run -m unittest discover -s tests -v
-python3 -m coverage report --fail-under=90 -m
+python3 -m coverage report --fail-under=95 -m

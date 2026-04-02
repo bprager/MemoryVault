@@ -1,6 +1,6 @@
 # Design
 
-Last updated: 2026-03-25
+Last updated: 2026-04-01
 
 ## Intended System
 
@@ -34,12 +34,18 @@ The repository now includes a small local discovery harness that:
 - tests whether a learned profile transfers to a different task family through an offline transfer benchmark.
 - summarizes recurring wins and gaps, task-family impact, cost patterns, profile summaries, and workspace lineages from stored strategy runs.
 - runs a benchmark-gated refresh loop that proposes a next profile from prior successful evidence and only keeps it if the current held-out benchmark improves.
+- exposes one shared local service core and one thin local HTTP path for task-state updates, event appends, resume-packet reads, and control-plane retrieval.
+- uses the first write precondition on that local HTTP path: `If-Match` against the current `task_version` for stale-write protection.
+- uses the first retry-safety mechanism on that local HTTP path: `Idempotency-Key` for safe replay of the original write result.
+- validates saved profile, benchmark, strategy, and release-report artifacts on load, with schema-less early files treated as legacy current-version artifacts and unknown schemas rejected clearly.
+- exposes one concrete release-candidate gate command that checks the current `1.0` identity, supported surface, compatibility story, quality-gate definition, and release benchmark status.
+- now also distinguishes the supported `1.0` surface from experimental helper commands by documenting that support promise explicitly and marking non-contractual CLI commands as experimental in help text.
 
 This harness is intentionally narrower than the final architecture. Its purpose is to help derive the durable memory model from observed failures before wiring the full graph-backed system.
 
 It should be treated as a tool for memory-strategy learning, not as a finished domain-specific memory product.
 
-For the `1.0` boundary, that tool framing is now explicit: the supported product is a local-first memory-learning workbench, while the shared-service integration remains later work.
+For the `1.0` boundary, that tool framing is now explicit and released: the supported product is a local-first memory-learning workbench, while the shared-service integration remains later work.
 
 ## Core Concepts From The Existing Design
 
@@ -169,6 +175,16 @@ The design should treat two memory classes differently:
 
 Procedural memory is important for self-improvement, but it should not share the same extraction and consolidation logic as declarative memory.
 
+## Evidence, Derived Views, And Judgments
+
+Within durable declarative memory, the design should still keep three roles separate:
+
+- `evidence`: source-grounded records tied to exact sessions, files, documents, or other raw material
+- `derived view`: summaries or profiles regenerated from evidence when that evidence changes
+- `judgment`: subjective or policy-like conclusions kept separate from observed facts and carrying explicit confidence
+
+This keeps retrieval auditable and prevents generated summaries from silently replacing what was actually observed.
+
 ## Procedural Playbooks
 
 The current preferred design for procedural memory is:
@@ -186,6 +202,7 @@ Durable memories should carry provenance and confidence signals so the system ca
 - resolve conflicts during consolidation
 - adjust trust during retrieval and inference
 - prune stale or weak memories without losing source lineage
+- preserve both occurrence time and recorded or updated time when that distinction matters
 
 ## Knowledge-Plane Evolution
 
@@ -193,6 +210,8 @@ The knowledge plane can eventually support:
 
 - dynamic linking among related memories
 - memory evolution as new evidence reshapes older summaries
+- asynchronous regeneration of derived views when source evidence changes
+- multi-channel retrieval that blends semantic, text, graph, and temporal signals
 - n-ary fact representation through reified fact or hyperedge nodes when binary edges are not expressive enough
 
 These are useful future capabilities, but they should not weaken the stability of the control-plane memory.

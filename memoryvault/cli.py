@@ -26,7 +26,9 @@ from .onboarding import (
 from .pipeline import run_demo, run_scenario, run_scenario_file, run_wind_tunnel_file, run_wind_tunnel_scenario
 from .public_data import list_public_data
 from .promotion import suggest_durable_fields, write_field_suggestions
+from .http_api import run_http_server
 from .release_benchmark import run_release_benchmark
+from .release_checks import ReleaseCandidateGateReport, run_release_candidate_gate
 from .scenarios import list_scenarios
 
 
@@ -36,16 +38,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--log-file", default=None, help="Optional path for a log file")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    list_parser = subparsers.add_parser("list-scenarios", help="List built-in interrupted task scenarios")
+    list_parser = subparsers.add_parser("list-scenarios", help="Experimental: list built-in interrupted task scenarios")
     list_parser.add_argument("--json", action="store_true", help="Print scenarios as JSON")
 
-    public_data_parser = subparsers.add_parser("list-public-data", help="List Hugging Face benchmark leads")
+    public_data_parser = subparsers.add_parser("list-public-data", help="Experimental: list Hugging Face benchmark leads")
     public_data_parser.add_argument("--json", action="store_true", help="Print public data leads as JSON")
 
-    hf_adapter_parser = subparsers.add_parser("list-hf-adapters", help="List supported Hugging Face dataset adapters")
+    hf_adapter_parser = subparsers.add_parser("list-hf-adapters", help="Experimental: list supported Hugging Face dataset adapters")
     hf_adapter_parser.add_argument("--json", action="store_true", help="Print supported adapters as JSON")
 
-    run_parser = subparsers.add_parser("run-scenario", help="Run one built-in scenario")
+    run_parser = subparsers.add_parser("run-scenario", help="Experimental: run one built-in scenario")
     run_parser.add_argument("scenario_id", help="Scenario id to execute")
     run_parser.add_argument("--base-dir", default="var/memoryvault", help="Directory for run artifacts")
 
@@ -53,10 +55,10 @@ def build_parser() -> argparse.ArgumentParser:
     run_file_parser.add_argument("path", help="Path to the task JSON file")
     run_file_parser.add_argument("--base-dir", default="var/memoryvault", help="Directory for run artifacts")
 
-    demo_parser = subparsers.add_parser("demo", help="Run all built-in scenarios")
+    demo_parser = subparsers.add_parser("demo", help="Experimental: run all built-in scenarios")
     demo_parser.add_argument("--base-dir", default="var/memoryvault", help="Directory for run artifacts")
 
-    wind_scenario_parser = subparsers.add_parser("wind-tunnel-scenario", help="Run the wind tunnel on one built-in scenario")
+    wind_scenario_parser = subparsers.add_parser("wind-tunnel-scenario", help="Experimental: run the wind tunnel on one built-in scenario")
     wind_scenario_parser.add_argument("scenario_id", help="Scenario id to execute")
     wind_scenario_parser.add_argument("--base-dir", default="var/memoryvault", help="Directory for run artifacts")
 
@@ -112,7 +114,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     onboard_hf_file_parser = subparsers.add_parser(
         "onboard-hf-file",
-        help="Run onboarding on saved Hugging Face dataset rows using a supported adapter",
+        help="Experimental: run onboarding on saved Hugging Face dataset rows using a supported adapter",
     )
     onboard_hf_file_parser.add_argument("adapter_id", help="Adapter id, for example hf_taskbench")
     onboard_hf_file_parser.add_argument("path", help="Path to a Hugging Face rows JSON file")
@@ -128,7 +130,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     refresh_hf_file_parser = subparsers.add_parser(
         "refresh-hf-file",
-        help="Refresh a workspace profile from saved Hugging Face rows using prior strategy rollups as evidence",
+        help="Experimental: refresh a workspace profile from saved Hugging Face rows using prior strategy rollups as evidence",
     )
     refresh_hf_file_parser.add_argument("adapter_id", help="Adapter id, for example hf_taskbench")
     refresh_hf_file_parser.add_argument("path", help="Path to a Hugging Face rows JSON file")
@@ -144,7 +146,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     onboard_hf_remote_parser = subparsers.add_parser(
         "onboard-hf-first-rows",
-        help="Fetch the first rows of a supported Hugging Face dataset and run onboarding on them",
+        help="Experimental: fetch the first rows of a supported Hugging Face dataset and run onboarding on them",
     )
     onboard_hf_remote_parser.add_argument("adapter_id", help="Adapter id, for example hf_taskbench")
     onboard_hf_remote_parser.add_argument("--config", default=None, help="Optional dataset config override")
@@ -163,7 +165,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     transfer_hf_file_parser = subparsers.add_parser(
         "transfer-hf-files",
-        help="Learn on saved Hugging Face rows from one adapter and test transfer on another",
+        help="Experimental: learn on saved Hugging Face rows from one adapter and test transfer on another",
     )
     transfer_hf_file_parser.add_argument("source_adapter_id", help="Source adapter id, for example hf_taskbench")
     transfer_hf_file_parser.add_argument("source_path", help="Path to the source Hugging Face rows JSON file")
@@ -197,6 +199,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     release_benchmark_parser.add_argument("--base-dir", default="var/memoryvault", help="Directory for release benchmark artifacts")
     release_benchmark_parser.add_argument("--json", action="store_true", help="Print the release benchmark report as JSON")
+
+    release_candidate_parser = subparsers.add_parser(
+        "release-candidate-check",
+        help="Run the repo-local release verification gate and report whether the stable support promise still holds",
+    )
+    release_candidate_parser.add_argument("--base-dir", default="var/memoryvault", help="Directory for release benchmark artifacts")
+    release_candidate_parser.add_argument("--skip-benchmark", action="store_true", help="Skip executing the release benchmark bundle")
+    release_candidate_parser.add_argument("--json", action="store_true", help="Print the release-candidate gate report as JSON")
+
+    serve_http_parser = subparsers.add_parser(
+        "serve-http",
+        help="Run the local HTTP service for the supported 1.0 integration path",
+    )
+    serve_http_parser.add_argument("--host", default="127.0.0.1", help="Host interface for the local HTTP service")
+    serve_http_parser.add_argument("--port", type=int, default=8765, help="Port for the local HTTP service")
+    serve_http_parser.add_argument("--base-dir", default="var/memoryvault", help="Directory for local service state")
 
     return parser
 
@@ -398,6 +416,22 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(asdict(release_report), indent=2))
         else:
             _print_release_benchmark_summary(run_dir.as_posix(), release_report)
+        return 0
+
+    if args.command == "release-candidate-check":
+        report = run_release_candidate_gate(
+            benchmark_base_dir=args.base_dir,
+            run_benchmark=not args.skip_benchmark,
+        )
+        if args.json:
+            print(json.dumps(asdict(report), indent=2))
+        else:
+            _print_release_candidate_summary(report)
+        return 0 if report.passed else 1
+
+    if args.command == "serve-http":
+        print(f"serving: http://{args.host}:{args.port}")
+        run_http_server(host=args.host, port=args.port, base_dir=args.base_dir)
         return 0
 
     parser.error(f"unknown command: {args.command}")
@@ -606,6 +640,20 @@ def _print_release_benchmark_summary(run_dir: str, report: ReleaseBenchmarkRepor
             f"- {case.case_id}: {case.run_kind}, pass {'yes' if case.gate_passed else 'no'}, "
             f"delta {case.average_score_delta:.2f}, adapted {case.adapted_average_score:.2f}"
         )
+    print("")
+
+
+def _print_release_candidate_summary(report: ReleaseCandidateGateReport) -> None:
+    print(f"release line: {report.release_line}")
+    print(f"project version: {report.project_version}")
+    print(f"benchmark ran: {'yes' if report.benchmark_ran else 'no'}")
+    if report.benchmark_artifact_path is not None:
+        print(f"benchmark artifact: {report.benchmark_artifact_path}")
+    print(f"gate passed: {'yes' if report.passed else 'no'}")
+    print("checks:")
+    for check in report.checks:
+        print(f"- {check.name}: {'pass' if check.passed else 'fail'}")
+        print(f"  {check.details}")
     print("")
 
 

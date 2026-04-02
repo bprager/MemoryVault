@@ -1,6 +1,6 @@
 # Tasks
 
-Last updated: 2026-03-25
+Last updated: 2026-04-01
 
 ## Active
 
@@ -14,30 +14,29 @@ Last updated: 2026-03-25
 - Keep the imported trace format simple enough that real task runs can be added without tooling friction.
 - Keep the tool domain-agnostic until repeated evidence justifies specialization.
 - Use synthetic traces or Hugging Face datasets whenever test inputs are needed.
-- Keep the 90% coverage and lint gates green as the tool grows.
+- Keep the 95% coverage and lint gates green as the tool grows.
 - Keep lifecycle logs and observability artifacts useful and lightweight.
 - Keep `pyproject.toml` and the latest released section in `Changelog.md` in sync.
 - Keep the integration design platform-neutral and centered on one canonical service boundary.
 - Keep onboarding zero-touch by default and manual preparation optional.
 - Keep the onboarding benchmark gate evidence-based; generated starter packs should not be trusted without held-out checks.
-- Keep the pre-1.0 release path honest; do not cut `1.0.0` while the supported surface is still ambiguous.
+- Keep the `1.0.0` support promise honest; do not let future changes silently expand or break the stable surface.
 
 ## Next
 
-- Implement one supported integration path in the `0.6.x` line.
-- Add compatibility and migration checks for workspace profiles and strategy artifacts before `0.9.x`.
-- Define the final `1.0` release gate and run it on a `0.9.x` release-candidate line.
 - Expand the synthetic interrupted-task library across several generic task shapes.
 - Add more Hugging Face dataset adapters beyond the current TaskBench, SWE-bench Verified, QASPER, and conversation-bench set.
 - Add a review loop that summarizes repeated misses and wind-tunnel damage across runs and task families.
 - Decide which repeated misses graduate into the next durable memory fields after `assumptions`.
+- Define durable memory-class markers for source evidence, derived views, and judgment-like records before the knowledge-plane schema hardens.
+- Define when durable records should carry both occurrence time and recorded or updated time.
 - Expand onboarding cue learning beyond the current free-form focus, decision, lesson, question, source, constraint, and blocker patterns.
 - Define the deterministic resume packet for general long-running work, including goal reminder and current-state header.
 - Define workspace isolation for the shared Memgraph instance on `odin:7697`.
 - Broaden the generated starter pack beyond learned failure markers and event-label aliases.
 - Expand the Hugging Face onboarding path beyond saved row snapshots and the first three adapters.
 - Expand the onboarding refresh loop beyond the first carried-forward cue phrases and test which ones generalize across task families.
-- Define the HTTP API contract that the MCP adapter and SDKs will share.
+- Define the HTTP API contract that the MCP adapter and SDKs will share, starting with the `0.6.0` four-endpoint slice.
 - Define the CloudEvents event contract for invalidation, rebuilds, and async memory work.
 - Define the cache-key strategy, invalidation rules, and lease model for multi-agent use.
 - Extend strategy comparison from single-field ablations to whole memory-policy comparisons.
@@ -45,7 +44,9 @@ Last updated: 2026-03-25
 - Define declarative memory update operations and conflict handling.
 - Define how procedural playbooks should grow, refine, and retire without monolithic rewrites.
 - Define how goal-conditioned retrieval is kept source-grounded to avoid self-confirming drift.
+- Define which future knowledge-plane summaries should be regenerated asynchronously from evidence changes.
 - Decide how provenance and confidence should be represented once the durable schema starts hardening.
+- Define the future multi-channel retrieval path for the knowledge plane, including when temporal filtering and reranking are worth the cost.
 - Decide what raw content should stay in Memgraph versus external files or object storage.
 
 ## Completed Recently
@@ -83,6 +84,18 @@ Last updated: 2026-03-25
 - Added a fixed offline `release-benchmark` command and `release_benchmark_report.json` artifact for the first public release bundle.
 - Added schema-version markers to saved workspace profiles and benchmark artifacts as the first narrow compatibility promise.
 - Released `0.5.0` with one explicit `1.0` identity: a local-first memory-learning workbench.
+- Added a first shared local service core and local HTTP slice with four endpoints for task-state updates, event appends, resume-packet reads, and control-plane retrieval.
+- Added end-to-end tests proving the new local HTTP path and the existing CLI path return the same resume content for the same input.
+- Added explicit `api_version: "v1"` HTTP envelopes, `service_task_state.v1` local file markers, `task_version` counters, and clearer structured errors for the first local HTTP slice.
+- Added compatibility checks so schema-less local task files load as legacy `v1` while unknown task-state schemas fail with explicit service and HTTP errors.
+- Added optimistic concurrency to local HTTP writes through `If-Match` against the current `task_version`, with stale writes returning a clear precondition failure.
+- Added optional `Idempotency-Key` support for local HTTP writes so safe retries replay the original result and conflicting key reuse is rejected clearly.
+- Added compatibility loaders and migration tests for saved workspace profiles, onboarding and transfer benchmarks, strategy records, and release benchmark reports, with schema-less early files treated as legacy `v1`.
+- Hardened the local HTTP path so malformed JSON-object shapes, malformed nested event and expected-item payloads, and mixed replay plus stale-write sequences now have direct end-to-end coverage and clear failure behavior.
+- Added a concrete `0.9.x` release-candidate gate through `python3 -m memoryvault release-candidate-check`, with tests and docs for identity, supported-surface, compatibility, quality-gate, and benchmark verification.
+- Moved the repo onto an actual `release/0.9.x` branch with version `0.9.0`, updated the release notes for that line, and exercised the release-candidate gate in both static and full-benchmark modes.
+- Hardened the `0.9.x` line by making the current `1.0` support promise explicit in the README, PRD, and release plan, and by teaching the release-candidate gate to fail when that promise or the experimental CLI markers drift.
+- Cut `1.0.0` from the exercised release-candidate line, updated the repo and docs to describe the stable release truthfully, and kept the release verification gate as the repo-local support check for future maintenance.
 
 ## Likely First Milestones
 

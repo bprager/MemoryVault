@@ -1,6 +1,6 @@
 # Lessons Learned
 
-Last updated: 2026-03-25
+Last updated: 2026-04-01
 
 ## Current Lessons
 
@@ -117,6 +117,22 @@ Once more than one agent can read and write the same task state, stale cached co
 If the tool is supposed to discover what matters across different kinds of work, a mandatory ontology at onboarding time pushes it toward premature certainty. Soft hints are safer than hard commitments.
 
 ### Fast graph bootstrapping is useful only if it stays provisional
+
+### Valid JSON is not enough for a safe write contract
+
+The HTTP boundary should reject request bodies that are valid JSON but not JSON objects, and it should validate nested event and expected-item shapes before the service layer sees them. Otherwise malformed writes turn into confusing runtime errors or accidental mutation tests instead of clear client-facing failures.
+
+### A release gate should be runnable, not only written down
+
+If the repo only describes a future release gate in documents, release week turns into an argument about what the gate was supposed to mean. A small executable gate command keeps the `1.0` promise concrete and makes dry runs possible before a release-candidate line exists.
+
+### A support promise is easier to trust when experimental surfaces are marked in the CLI
+
+Once a release-candidate line exists, it is not enough to say in docs that some commands are still experimental. Marking those commands directly in `--help` output and checking that in the release gate keeps the stable promise obvious and reduces accidental support creep.
+
+### A stable cut needs wording cleanup, not only a version bump
+
+If the repo changes from release candidate to stable, update the command help, gate output, and docs at the same time. Otherwise the version says `1.0.0` while the tool still introduces itself as a rehearsal.
 
 Cheap first-pass graph extraction can make onboarding faster, but it should feed discovery and ranking, not replace explicit goal, plan, and failure memory.
 

@@ -8,9 +8,11 @@ from io import StringIO
 from pathlib import Path
 
 from memoryvault.cli import main as cli_main
+from memoryvault.onboarding import ArtifactCompatibilityError
 from memoryvault.release_benchmark import (
     RELEASE_BENCHMARK_BUNDLE_ID,
     RELEASE_BENCHMARK_BUNDLE_VERSION,
+    load_release_benchmark_report,
     run_release_benchmark,
 )
 
@@ -43,6 +45,42 @@ class ReleaseBenchmarkTests(unittest.TestCase):
                 self.assertTrue(Path(case.artifact_dir).exists())
                 self.assertGreaterEqual(case.adapted_average_score, case.baseline_average_score)
                 self.assertGreater(case.scenario_count, 0)
+
+    def test_release_benchmark_report_loader_accepts_legacy_schema_less_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir, report = run_release_benchmark(base_dir=temp_dir)
+            report_path = run_dir / "release_benchmark_report.json"
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            payload.pop("artifact_schema_version")
+            report_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+            loaded_report = load_release_benchmark_report(report_path)
+
+            self.assertEqual(loaded_report.bundle_id, report.bundle_id)
+            self.assertEqual(loaded_report.passed_case_count, report.passed_case_count)
+            self.assertEqual(loaded_report.artifact_schema_version, "release_benchmark_report.v1")
+
+    def test_release_benchmark_report_loader_rejects_unknown_schema(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir, _report = run_release_benchmark(base_dir=temp_dir)
+            report_path = run_dir / "release_benchmark_report.json"
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            payload["artifact_schema_version"] = "release_benchmark_report.v9"
+            report_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ArtifactCompatibilityError, "Unsupported release benchmark report schema"):
+                load_release_benchmark_report(report_path)
+
+    def test_release_benchmark_report_loader_rejects_invalid_payload_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir, _report = run_release_benchmark(base_dir=temp_dir)
+            report_path = run_dir / "release_benchmark_report.json"
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            payload.pop("bundle_id")
+            report_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ArtifactCompatibilityError, "not a valid release benchmark report"):
+                load_release_benchmark_report(report_path)
 
     def test_cli_release_benchmark_prints_summary(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
